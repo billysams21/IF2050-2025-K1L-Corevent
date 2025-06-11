@@ -1,4 +1,4 @@
-package com.corevent.dto.ticket;
+package com.corevent.dto.event;
 
 import com.corevent.entity.Payment;
 
