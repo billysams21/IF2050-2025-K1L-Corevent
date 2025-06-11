@@ -4,92 +4,31 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21" 
-            xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="com.corevent.boundary.LoginController"
-            prefHeight="800.0" 
-            prefWidth="1200.0"
-            styleClass="root-container">
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.corevent.controller.LoginController">
     
-  <center>
-    <VBox alignment="CENTER" spacing="20.0" maxWidth="400.0">
-      <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-      </padding>
-      
-      <!-- Logo and Title -->
-      <VBox alignment="CENTER" spacing="10">
-          <Label text="COREVENT" styleClass="app-title">
-              <font>
-                  <Font name="System Bold" size="36.0"/>
-              </font>
-          </Label>
-          <Label text="Campus Event Management System" styleClass="app-subtitle"/>
-      </VBox>
-      
-      <!-- Login Form -->
-      <VBox spacing="15" styleClass="login-container">
-        <padding>
-          <Insets top="30" right="30" bottom="30" left="30"/>
-        </padding>
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Text style="-fx-font-size: 24px;" text="Corevent Login"/>
+    
+    <VBox spacing="10.0">
+        <Label text="Username"/>
+        <TextField fx:id="usernameField" promptText="Enter your username"/>
         
-        <Label text="Welcome Back!" styleClass="form-title">
-          <font>
-            <Font size="24.0"/>
-          </font>
-        </Label>
+        <Label text="Password"/>
+        <PasswordField fx:id="passwordField" promptText="Enter your password"/>
         
-        <!-- Username Field -->
-        <VBox spacing="5">
-          <Label text="Username" styleClass="form-label"/>
-          <TextField fx:id="usernameField" 
-              promptText="Enter your username" 
-              styleClass="form-field"/>
-        </VBox>
+        <CheckBox fx:id="rememberMeCheckbox" text="Remember me"/>
         
-        <!-- Password Field -->
-        <VBox spacing="5">
-          <Label text="Password" styleClass="form-label"/>
-          <PasswordField fx:id="passwordField" 
-                        promptText="Enter your password" 
-                        styleClass="form-field"/>
-        </VBox>
-        
-        <!-- Remember Me -->
-        <CheckBox fx:id="rememberMeCheckbox" 
-                  text="Remember me" 
-                  styleClass="remember-checkbox"/>
-        
-        <!-- Error Label -->
-        <Label fx:id="errorLabel" 
-              styleClass="error-label" 
-              wrapText="true" 
-              visible="false"/>
-        
-        <!-- Login Button -->
-        <Button fx:id="loginButton" 
-                text="Login" 
-                onAction="#handleLogin"
-                styleClass="primary-button"
-                prefWidth="Infinity">
-          <font>
-            <Font size="16.0"/>
-          </font>
-        </Button>
-        
-        <!-- Progress Indicator -->
-        <StackPane>
-          <ProgressIndicator fx:id="progressIndicator" 
-                            visible="false"
-                            maxWidth="30"
-                            maxHeight="30"/>
-        </StackPane>
-      </VBox>
-      
-      <!-- Footer -->
-      <Label text="© 2024 Corevent. All rights reserved." 
-        styleClass="footer-text"/>
+        <Button fx:id="loginButton" text="Login" maxWidth="Infinity"/>
     </VBox>
-  </center>
-</BorderPane>
+    
+    <VBox fx:id="errorBox" spacing="5.0" style="-fx-background-color: #ffebee; -fx-padding: 10;">
+        <Label fx:id="errorLabel" textFill="RED"/>
+    </VBox>
+    
+</VBox>
