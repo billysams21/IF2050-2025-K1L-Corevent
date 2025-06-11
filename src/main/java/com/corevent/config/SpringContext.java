@@ -1,4 +1,4 @@
-package main.java.com.corevent.config;
+package com.corevent.config;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

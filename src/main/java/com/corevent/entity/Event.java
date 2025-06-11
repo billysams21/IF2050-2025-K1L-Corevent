@@ -1,4 +1,4 @@
-package main.java.com.corevent.entity;
+package com.corevent.entity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,18 +39,18 @@ public class Event {
   @Column(columnDefinition = "TEXT")
   private String termsAndConditions;
   
-  // @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-  // private List<Ticket> tickets = new ArrayList<>();
+  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+  private List<Ticket> tickets = new ArrayList<>();
   
-  // @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-  // private List<Question> questions = new ArrayList<>();
+  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+  private List<Notification> notifications = new ArrayList<>();
   
-  // @ManyToMany
-  // @JoinTable(
-  //     name = "event_committee",
-  //     joinColumns = @JoinColumn(name = "event_id"),
-  //     inverseJoinColumns = @JoinColumn(name = "committee_id")
-  // )
+  @ManyToMany
+  @JoinTable(
+      name = "event_committee",
+      joinColumns = @JoinColumn(name = "event_id"),
+      inverseJoinColumns = @JoinColumn(name = "committee_id")
+  )
   private List<Committee> committees = new ArrayList<>();
   
   // Business Logic Methods
@@ -87,11 +87,26 @@ public class Event {
   public Integer getQuota() { return quota; }
   public void setQuota(Integer quota) { this.quota = quota; }
   
+  public Integer getCurrentParticipants() { return currentParticipants; }
+  public void setCurrentParticipants(Integer currentParticipants) { this.currentParticipants = currentParticipants; }
+  
   public EventType getEventType() { return eventType; }
   public void setEventType(EventType eventType) { this.eventType = eventType; }
   
   public Double getTicketPrice() { return ticketPrice; }
   public void setTicketPrice(Double ticketPrice) { this.ticketPrice = ticketPrice; }
+  
+  public String getTermsAndConditions() { return termsAndConditions; }
+  public void setTermsAndConditions(String termsAndConditions) { this.termsAndConditions = termsAndConditions; }
+  
+  public List<Ticket> getTickets() { return tickets; }
+  public void setTickets(List<Ticket> tickets) { this.tickets = tickets; }
+  
+  public List<Notification> getNotifications() { return notifications; }
+  public void setNotifications(List<Notification> notifications) { this.notifications = notifications; }
+  
+  public List<Committee> getCommittees() { return committees; }
+  public void setCommittees(List<Committee> committees) { this.committees = committees; }
   
   // Enum for Event Type
   public enum EventType {

@@ -1,4 +1,4 @@
-package main.java.com.corevent.entity;
+package com.corevent.entity;
 
 import java.time.LocalDateTime;
 

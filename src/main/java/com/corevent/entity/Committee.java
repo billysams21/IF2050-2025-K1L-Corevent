@@ -1,15 +1,17 @@
-package main.java.com.corevent.entity;
+package com.corevent.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.Notification;
-
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "committees")
-
 public class Committee extends User {
   @Column(nullable = false)
   private String fullName;
@@ -57,4 +59,7 @@ public class Committee extends User {
   
   public List<Event> getManagedEvents() { return managedEvents; }
   public void setManagedEvents(List<Event> managedEvents) { this.managedEvents = managedEvents; }
+
+  public List<Notification> getSentNotifications() { return sentNotifications; }
+  public void setSentNotifications(List<Notification> sentNotifications) { this.sentNotifications = sentNotifications; }
 }
