@@ -1,54 +1,129 @@
-package com.corevent.controller;
+package com.corevent.boundary;
 
-import org.springframework.stereotype.Controller;
-
-import com.corevent.service.AuthService;
-
+import com.corevent.service.AuthenticationService;
+import com.corevent.dto.LoginResponse;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Controller
+@Component
 public class LoginController {
+    
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
-    @FXML private CheckBox rememberMeCheckbox;
     @FXML private Button loginButton;
-    @FXML private VBox errorBox;
     @FXML private Label errorLabel;
-
-    private final AuthService authService;
-
-    public LoginController(AuthService authService) {
-        this.authService = authService;
-    }
-
+    @FXML private ProgressIndicator progressIndicator;
+    @FXML private CheckBox rememberMeCheckbox;
+    
+    @Autowired
+    private AuthenticationService authService;
+    
     @FXML
     public void initialize() {
-        loginButton.setOnAction(event -> handleLogin());
-        errorBox.setVisible(false);
+        progressIndicator.setVisible(false);
+        errorLabel.setVisible(false);
+        
+        // Enable login on Enter key
+        passwordField.setOnAction(e -> handleLogin());
     }
-
+    
+    @FXML
     private void handleLogin() {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = passwordField.getText();
-        boolean rememberMe = rememberMeCheckbox.isSelected();
-
-        try {
-            authService.login(username, password, rememberMe);
-            // Navigate to appropriate dashboard based on user role
-            // TODO: Implement navigation
-        } catch (Exception e) {
-            showError("Invalid username or password");
+        
+        if (username.isEmpty() || password.isEmpty()) {
+            showError("Please enter username and password");
+            return;
+        }
+        
+        // Disable form during login
+        setFormDisabled(true);
+        progressIndicator.setVisible(true);
+        errorLabel.setVisible(false);
+        
+        // Create login task
+        Task<LoginResponse> loginTask = new Task<>() {
+            @Override
+            protected LoginResponse call() throws Exception {
+                return authService.authenticate(username, password).get();
+            }
+        };
+        
+        loginTask.setOnSucceeded(e -> {
+            LoginResponse response = loginTask.getValue();
+            Platform.runLater(() -> handleLoginResponse(response));
+        });
+        
+        loginTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                showError("Connection error. Please try again.");
+                setFormDisabled(false);
+                progressIndicator.setVisible(false);
+            });
+        });
+        
+        new Thread(loginTask).start();
+    }
+    
+    private void handleLoginResponse(LoginResponse response) {
+        progressIndicator.setVisible(false);
+        
+        if (response.isSuccess()) {
+            // Save credentials if remember me is checked
+            if (rememberMeCheckbox.isSelected()) {
+                PreferencesManager.saveCredentials(usernameField.getText());
+            }
+            
+            // Navigate to appropriate dashboard
+            navigateToDashboard(response.getUser().getRole());
+        } else {
+            showError(response.getMessage());
+            setFormDisabled(false);
         }
     }
-
+    
+    private void navigateToDashboard(String role) {
+        try {
+            String fxmlFile = role.equals("COMMITTEE") ? 
+                            "/fxml/committee-dashboard.fxml" : 
+                            "/fxml/participant-dashboard.fxml";
+            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+            loader.setControllerFactory(SpringContext::getBean);
+            Parent root = loader.load();
+            
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+            
+            stage.setScene(scene);
+            stage.setTitle("Corevent - Dashboard");
+            stage.centerOnScreen();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error loading dashboard");
+        }
+    }
+    
+    private void setFormDisabled(boolean disabled) {
+        usernameField.setDisable(disabled);
+        passwordField.setDisable(disabled);
+        loginButton.setDisable(disabled);
+        rememberMeCheckbox.setDisable(disabled);
+    }
+    
     private void showError(String message) {
         errorLabel.setText(message);
-        errorBox.setVisible(true);
+        errorLabel.setVisible(true);
     }
-} 
+}
