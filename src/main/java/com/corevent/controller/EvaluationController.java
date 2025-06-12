@@ -1,5 +1,9 @@
 package com.corevent.controller;
 
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+
 import com.corevent.dto.EvaluationData;
 import com.corevent.dto.SubmitResult;
 import com.corevent.entity.Evaluation;
@@ -15,13 +19,20 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -193,6 +204,17 @@ public class EvaluationController {
         loadTask.setOnSucceeded(e -> {
             List<Event> events = loadTask.getValue();
             eventComboBox.setItems(FXCollections.observableArrayList(events));
+            eventComboBox.setCellFactory(param -> new ListCell<Event>() {
+                @Override
+                protected void updateItem(Event event, boolean empty) {
+                    super.updateItem(event, empty);
+                    if (empty || event == null) {
+                        setText(null);
+                    } else {
+                        setText(event.getEventName());
+                    }
+                }
+            });
         });
         
         loadTask.setOnFailed(e -> {
