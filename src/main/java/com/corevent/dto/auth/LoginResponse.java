@@ -2,9 +2,13 @@ package com.corevent.dto.auth;
 
 import com.corevent.entity.User;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
     private boolean success;
     private String message;
@@ -12,9 +16,6 @@ public class LoginResponse {
     private String token;
     private String refreshToken;
     private long expiresIn;
-
-    public LoginResponse() {
-    }
 
     public LoginResponse(boolean success, String message, User user, String token) {
         this.success = success;

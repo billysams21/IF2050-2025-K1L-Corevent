@@ -29,7 +29,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setFullName("Amin");
             admin.setEmail("admin@corevent.com");
             admin.setRole(User.UserRole.COMMITTEE);
-            admin.setEnabled(true);
+            admin.setStatus(User.AccountStatus.ACTIVE);
             userRepository.save(admin);
         }
     }

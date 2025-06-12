@@ -43,7 +43,9 @@ public abstract class User {
   @Enumerated(EnumType.STRING)
   private UserRole role;
   
-  private boolean enabled = true;
+  @Column(name = "account_status")
+  @Enumerated(EnumType.STRING)
+  private AccountStatus status = AccountStatus.ACTIVE;
   
   @Column(name = "last_login")
   private LocalDateTime lastLogin;
@@ -58,9 +60,6 @@ public abstract class User {
   
   @Column(name = "created_at")
   private LocalDateTime createdAt;
-  
-  @Column(name = "is_active")
-  private Boolean isActive = true;
   
   @PrePersist
   protected void onCreate() {
@@ -86,15 +85,35 @@ public abstract class User {
   public LocalDateTime getCreatedAt() { return createdAt; }
   public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
   
-  public Boolean getIsActive() { return isActive; }
-  public void setIsActive(Boolean isActive) { this.isActive = isActive; }
-  
   public String getRole() {
     return roles.isEmpty() ? null : roles.iterator().next();
+  }
+  
+  public boolean isEnabled() {
+    return status == AccountStatus.ACTIVE;
+  }
+  
+  public void setEnabled(boolean enabled) {
+    this.status = enabled ? AccountStatus.ACTIVE : AccountStatus.DISABLED;
+  }
+  
+  public boolean isActive() {
+    return status == AccountStatus.ACTIVE;
+  }
+  
+  public void setActive(boolean active) {
+    this.status = active ? AccountStatus.ACTIVE : AccountStatus.DISABLED;
   }
 
   public enum UserRole {
     COMMITTEE,
     PARTICIPANT
+  }
+  
+  public enum AccountStatus {
+    ACTIVE,
+    DISABLED,
+    SUSPENDED,
+    PENDING_ACTIVATION
   }
 }

@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.corevent.dto.*;
+import com.corevent.dto.event.CreateEventRequest;
+import com.corevent.dto.event.UpdateEventRequest;
 import com.corevent.entity.Event;
+import com.corevent.entity.ParticipantInfo;
 
 import jakarta.annotation.PostConstruct;
 import retrofit2.Call;
