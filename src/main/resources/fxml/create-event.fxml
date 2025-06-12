@@ -12,18 +12,20 @@
         <DatePicker fx:id="datePicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
         <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
         <TextField fx:id="timeField" promptText="HH:mm" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-        <Label text="Location:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <TextField fx:id="locationField" promptText="Location" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-        <Label text="Quota:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <TextField fx:id="quotaField" promptText="Quota" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-        <Label text="Type:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <ComboBox fx:id="eventTypeCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-        <Label text="Ticket Price:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-        <TextField fx:id="ticketPriceField" promptText="0.0" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-        <Label text="Terms &amp; Conditions:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-        <TextArea fx:id="termsField" promptText="Terms and Conditions" GridPane.rowIndex="7" GridPane.columnIndex="1" prefRowCount="2"/>
-        <Label text="Description:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-        <TextArea fx:id="descriptionField" promptText="Description" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="2"/>
+        <Label text="End Time:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="endTimeField" promptText="HH:mm" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Location:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="locationField" promptText="Location" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label text="Quota:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="quotaField" promptText="Quota" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Type:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="eventTypeCombo" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Ticket Price:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextField fx:id="ticketPriceField" promptText="0.0" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        <Label text="Terms &amp; Conditions:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <TextArea fx:id="termsField" promptText="Terms and Conditions" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="2"/>
+        <Label text="Description:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+        <TextArea fx:id="descriptionField" promptText="Description" GridPane.rowIndex="9" GridPane.columnIndex="1" prefRowCount="2"/>
     </GridPane>
     <HBox spacing="12" alignment="CENTER_RIGHT">
         <Button fx:id="saveButton" text="Save" styleClass="button-primary" onAction="#handleSave"/>

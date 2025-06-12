@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.EventDetailsViewController" spacing="20" style="-fx-background-color: #f7f9fa; -fx-padding: 32;">
+    <HBox alignment="CENTER_LEFT" spacing="18">
+        <Label text="Event Details" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Button fx:id="backButton" text="Back" styleClass="button-secondary" onAction="#handleBack"/>
+    </HBox>
+
+    <!-- Event Details -->
+    <VBox spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
+        <Label text="Event Information" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <GridPane hgap="12" vgap="12">
+            <Label text="Event Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label fx:id="eventNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            
+            <Label text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="eventDateLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            
+            <Label text="End Time:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="eventEndTimeLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            
+            <Label text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label fx:id="eventLocationLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            
+            <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Label fx:id="eventTypeLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            
+            <Label text="Price:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+            <Label fx:id="eventPriceLabel" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            
+            <Label text="Available Slots:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+            <Label fx:id="availableSlotsLabel" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        </GridPane>
+    </VBox>
+
+    <!-- Description -->
+    <VBox spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
+        <Label text="Description" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <TextArea fx:id="descriptionTextArea" editable="false" wrapText="true" style="-fx-background-color: transparent;"/>
+    </VBox>
+
+    <!-- Terms and Conditions -->
+    <VBox spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
+        <Label text="Terms and Conditions" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <TextArea fx:id="termsTextArea" editable="false" wrapText="true" style="-fx-background-color: transparent;"/>
+    </VBox>
+
+    <!-- Check-in Button (only visible when it's time for the event) -->
+    <Button fx:id="checkInButton" text="Check In" styleClass="button-primary" onAction="#handleCheckIn" visible="false" managed="false"/>
+</VBox> 

@@ -31,6 +31,9 @@ public class Event {
   @Column(nullable = false)
   private LocalDateTime date;
   
+  @Column(nullable = false)
+  private LocalDateTime endTime;
+  
   @Column(columnDefinition = "TEXT")
   private String schedule;
   
@@ -92,6 +95,9 @@ public class Event {
   
   public LocalDateTime getDate() { return date; }
   public void setDate(LocalDateTime date) { this.date = date; }
+  
+  public LocalDateTime getEndTime() { return endTime; }
+  public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
   
   public String getSchedule() { return schedule; }
   public void setSchedule(String schedule) { this.schedule = schedule; }

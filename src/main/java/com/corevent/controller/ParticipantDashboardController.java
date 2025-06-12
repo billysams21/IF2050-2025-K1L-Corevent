@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import com.corevent.entity.Attendance;
 import com.corevent.entity.Participant;
 import com.corevent.entity.Ticket;
 import com.corevent.entity.Ticket.TicketStatus;
 import com.corevent.entity.User;
+import com.corevent.service.AttendanceService;
 import com.corevent.service.EventService;
 import com.corevent.service.TicketService;
 import com.corevent.util.NavigationManager;
@@ -64,6 +66,9 @@ public class ParticipantDashboardController {
     @Autowired
     private TicketService ticketService;
     
+    @Autowired
+    private AttendanceService attendanceService;
+    
     @FXML
     public void initialize() {
         setupUserInfo();
@@ -100,8 +105,20 @@ public class ParticipantDashboardController {
                 }
                 
                 Ticket ticket = getTableRow().getItem();
-                // TODO: Implement attendance status check
-                setText("Not Checked In");
+                User currentUser = SessionManager.getInstance().getCurrentUser();
+                if (currentUser instanceof Participant) {
+                    Participant participant = (Participant) currentUser;
+                    Attendance attendance = attendanceService.findByEventIdAndParticipantId(
+                        ticket.getEvent().getEventId(), 
+                        participant.getId()
+                    );
+                    
+                    if (attendance != null) {
+                        setText(attendance.getStatus().name());
+                    } else {
+                        setText("Not Checked In");
+                    }
+                }
             }
         });
         
@@ -198,7 +215,6 @@ public class ParticipantDashboardController {
     @FXML
     private void handleMyEvaluations() {
         try {
-            // Show list of events that can be evaluated
             navigationManager.navigateToMyEvaluations();
         } catch (IOException e) {
             log.error("Failed to navigate to my evaluations", e);
