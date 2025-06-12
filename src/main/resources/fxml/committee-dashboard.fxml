@@ -41,6 +41,7 @@
         <HBox alignment="CENTER_LEFT" spacing="10">
             <Label text="Events" styleClass="section-title"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="viewEvaluationsButton" text="Lihat Evaluasi" onAction="#handleViewEvaluations" styleClass="button-secondary"/>
             <Button fx:id="createEventButton" text="Create Event" onAction="#handleCreateEvent" styleClass="button-primary"/>
             <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh" styleClass="button-secondary"/>
         </HBox>

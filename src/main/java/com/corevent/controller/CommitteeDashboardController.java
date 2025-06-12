@@ -187,6 +187,16 @@ public class CommitteeDashboardController {
     }
     
     @FXML
+    private void handleViewEvaluations() {
+        try {
+            navigationManager.navigateToEvaluationResults();
+        } catch (IOException e) {
+            log.error("Failed to navigate to evaluation results", e);
+            showAlert("Error", "Failed to open evaluation results");
+        }
+    }
+    
+    @FXML
     private void handleViewEvent(Event event) {
         try {
             navigationManager.navigateToEventDetails(event.getEventId());
