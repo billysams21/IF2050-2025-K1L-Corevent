@@ -357,3 +357,172 @@
 .error-label {
   -fx-text-fill: #c62828;
 }
+
+/* Evaluation Form Styles */
+.evaluation-form-container {
+  -fx-background-color: white;
+  -fx-background-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.form-header {
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 0 0 1 0;
+}
+
+.event-info-section {
+  -fx-background-color: #f8f9fa;
+  -fx-background-radius: 8;
+  -fx-padding: 15;
+}
+
+.event-info-grid .info-label {
+  -fx-font-weight: bold;
+  -fx-text-fill: #7f8c8d;
+}
+
+.event-info-grid .info-value {
+  -fx-text-fill: #2c3e50;
+}
+
+.rating-section {
+  -fx-background-color: #fff;
+  -fx-border-color: #e0e0e0;
+  -fx-border-radius: 8;
+  -fx-border-width: 1;
+  -fx-padding: 20;
+}
+
+.rating-buttons-container .radio-button {
+  -fx-font-size: 16px;
+  -fx-spacing: 10;
+}
+
+.rating-buttons-container .radio-button:selected {
+  -fx-text-fill: #f39c12;
+  -fx-font-weight: bold;
+}
+
+.feedback-section {
+  -fx-spacing: 10;
+}
+
+.feedback-textarea {
+  -fx-background-color: #f8f9fa;
+  -fx-border-color: #e0e0e0;
+  -fx-border-radius: 5;
+  -fx-padding: 10;
+}
+
+.feedback-textarea:focused {
+  -fx-background-color: white;
+  -fx-border-color: #3498db;
+}
+
+.character-limit-label {
+  -fx-text-fill: #95a5a6;
+  -fx-font-size: 11px;
+}
+
+.section-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2c3e50;
+}
+
+.section-subtitle {
+  -fx-text-fill: #7f8c8d;
+  -fx-font-size: 13px;
+}
+
+/* Evaluation Results Styles */
+.evaluation-results-container {
+  -fx-background-color: white;
+  -fx-background-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.statistics-cards {
+  -fx-spacing: 15;
+}
+
+.stat-value-large {
+  -fx-font-size: 36px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #2c3e50;
+}
+
+.evaluations-table .table-cell {
+  -fx-alignment: center-left;
+  -fx-padding: 10;
+}
+
+.table-placeholder {
+  -fx-text-fill: #95a5a6;
+  -fx-font-style: italic;
+}
+
+/* My Evaluations Styles */
+.my-evaluations-container {
+  -fx-background-color: white;
+  -fx-background-radius: 10;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.evaluation-tabs .tab-pane .tab-header-area .tab-header-background {
+  -fx-background-color: #f8f9fa;
+}
+
+.evaluation-tabs .tab {
+  -fx-background-color: #ecf0f1;
+  -fx-background-radius: 5 5 0 0;
+}
+
+.evaluation-tabs .tab:selected {
+  -fx-background-color: white;
+  -fx-border-color: #3498db;
+  -fx-border-width: 0 0 2 0;
+}
+
+.status-completed {
+  -fx-text-fill: #27ae60;
+  -fx-font-weight: bold;
+}
+
+.status-pending {
+  -fx-text-fill: #e67e22;
+  -fx-font-weight: bold;
+}
+
+.action-buttons {
+  -fx-border-color: #e0e0e0;
+  -fx-border-width: 1 0 0 0;
+  -fx-padding: 15 0 0 0;
+}
+
+/* Button Styles for Evaluations */
+.button-primary {
+  -fx-background-color: #3498db;
+  -fx-text-fill: white;
+  -fx-background-radius: 5;
+  -fx-padding: 10 15;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.button-primary:hover {
+  -fx-background-color: #2980b9;
+}
+
+.button-secondary {
+  -fx-background-color: #95a5a6;
+  -fx-text-fill: white;
+  -fx-background-radius: 5;
+  -fx-padding: 10 15;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.button-secondary:hover {
+  -fx-background-color: #7f8c8d;
+}
