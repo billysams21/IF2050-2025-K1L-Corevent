@@ -1,20 +1,15 @@
 package com.corevent.controller;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.corevent.dto.ExportResponse;
 import com.corevent.dto.event.CreateEventRequest;
 import com.corevent.dto.event.CreateEventResponse;
-import com.corevent.dto.schedule.UpdateScheduleRequest;
-import com.corevent.dto.schedule.UpdateScheduleResponse;
 import com.corevent.entity.Committee;
 import com.corevent.entity.Event;
-import com.corevent.entity.Participant;
-import com.corevent.entity.ParticipantInfo;
+import com.corevent.entity.User;
 import com.corevent.service.EventService;
 import com.corevent.util.LogManager;
 import com.corevent.util.SessionManager;
@@ -22,8 +17,8 @@ import com.corevent.util.SessionManager;
 @Controller
 public class EventController {
     
-    // @Autowired
-    // private EventService eventService;
+    @Autowired
+    private EventService eventService;
     
     // @Autowired
     // private LocationService locationService;
@@ -33,54 +28,6 @@ public class EventController {
     
     // @Autowired
     // private CommitteeService committeeService;
-    
-    // /**
-    //  * UC01 - Create Event
-    //  */
-    // public CreateEventResponse createEvent(CreateEventRequest request) {
-    //     // 1. Validate input
-    //     if (!validateEventInput(request)) {
-    //         return new CreateEventResponse(false, "Invalid input data");
-    //     }
-        
-    //     // 2. Check if date is in the future
-    //     if (request.getDate().isBefore(LocalDateTime.now())) {
-    //         return new CreateEventResponse(false, "Event date must be in the future");
-    //     }
-        
-    //     // 3. Check location availability
-    //     boolean locationAvailable = locationService.checkAvailability(
-    //         request.getLocation(), 
-    //         request.getDate()
-    //     );
-        
-    //     if (!locationAvailable) {
-    //         return new CreateEventResponse(false, "Location not available on selected date");
-    //     }
-        
-    //     // 4. Create new Event object
-    //     Event event = new Event();
-    //     event.setEventName(request.getEventName());
-    //     event.setDate(request.getDate());
-    //     event.setSchedule(request.getSchedule());
-    //     event.setLocation(request.getLocation());
-    //     event.setQuota(request.getQuota());
-    //     event.setEventType(request.getEventType());
-    //     event.setTicketPrice(request.getTicketPrice());
-    //     event.setTermsAndConditions(request.getTermsAndConditions());
-        
-    //     // 5. Save to database
-    //     Event savedEvent = eventService.save(event);
-        
-    //     // 6. Assign event to committee
-    //     Committee currentCommittee = SessionManager.getInstance().getCurrentCommittee();
-    //     committeeService.assignEventToCommittee(savedEvent, currentCommittee);
-        
-    //     // 7. Log event creation
-    //     LogManager.logEventCreation(savedEvent, currentCommittee);
-        
-    //     return new CreateEventResponse(true, "Event created successfully", savedEvent.getEventId());
-    // }
     
     // /**
     //  * UC07 - Update Event Schedule
@@ -171,4 +118,63 @@ public class EventController {
     //     // Implement schedule format validation
     //     return schedule != null && !schedule.isEmpty();
     // }
+
+    // UC1 - Create Event
+    public CreateEventResponse createEvent(CreateEventRequest request) {
+        // 1. Validate input
+        if (request == null || request.getEventName() == null || request.getEventName().isEmpty()
+                || request.getDate() == null || request.getLocation() == null || request.getLocation().isEmpty()
+                || request.getQuota() == null || request.getQuota() <= 0) {
+            return new CreateEventResponse(false, "Invalid input data");
+        }
+        if (request.getDate().isBefore(LocalDateTime.now())) {
+            return new CreateEventResponse(false, "Event date must be in the future");
+        }
+        // TODO: Implement location availability check if locationService is available
+        // if (locationService != null && !locationService.checkAvailability(request.getLocation(), request.getDate())) {
+        //     return new CreateEventResponse(false, "Location not available on selected date");
+        // }
+        Event event = new Event();
+        event.setEventName(request.getEventName());
+        event.setDate(request.getDate());
+        event.setSchedule(request.getSchedule());
+        event.setLocation(request.getLocation());
+        event.setQuota(request.getQuota());
+        event.setEventType(request.getEventType());
+        event.setTicketPrice(request.getTicketPrice());
+        event.setTermsAndConditions(request.getTermsAndConditions());
+        event.setDescription(request.getDescription());
+        Event savedEvent = eventService.save(event);
+        User user = SessionManager.getInstance().getCurrentUser();
+        Committee currentCommittee = (user instanceof Committee) ? (Committee) user : null;
+        if (currentCommittee != null) {
+            // Assign event to committee
+            savedEvent.getCommittees().add(currentCommittee);
+            eventService.update(savedEvent);
+        }
+        LogManager.logEventCreation(savedEvent, currentCommittee);
+        return new CreateEventResponse(true, "Event created successfully", savedEvent.getEventId());
+    }
+    
+    // UC1 - Update Event
+    public CreateEventResponse updateEvent(String eventId, com.corevent.dto.event.UpdateEventRequest request) {
+        if (eventId == null || request == null) {
+            return new CreateEventResponse(false, "Invalid input");
+        }
+        Event event = eventService.findById(eventId);
+        if (event == null) {
+            return new CreateEventResponse(false, "Event not found");
+        }
+        if (request.getEventName() != null) event.setEventName(request.getEventName());
+        if (request.getDate() != null) event.setDate(request.getDate());
+        if (request.getSchedule() != null) event.setSchedule(request.getSchedule());
+        if (request.getLocation() != null) event.setLocation(request.getLocation());
+        if (request.getQuota() != null) event.setQuota(request.getQuota());
+        if (request.getEventType() != null) event.setEventType(request.getEventType());
+        if (request.getTicketPrice() != null) event.setTicketPrice(request.getTicketPrice());
+        if (request.getTermsAndConditions() != null) event.setTermsAndConditions(request.getTermsAndConditions());
+        if (request.getDescription() != null) event.setDescription(request.getDescription());
+        eventService.update(event);
+        return new CreateEventResponse(true, "Event updated successfully", event.getEventId());
+    }
 }

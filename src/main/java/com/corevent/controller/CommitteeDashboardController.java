@@ -3,7 +3,6 @@ package com.corevent.controller;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 
@@ -51,7 +50,6 @@ public class CommitteeDashboardController {
     @FXML private TableColumn<Event, Void> actionsColumn;
     
     @FXML private Button createEventButton;
-    @FXML private Button manageEventsButton;
     @FXML private Button manageAttendanceButton;
     @FXML private Button profileButton;
     
@@ -70,10 +68,9 @@ public class CommitteeDashboardController {
     }
     
     private void setupEventHandlers() {
-        createEventButton.setOnAction(event -> handleCreateEvent());
-        manageEventsButton.setOnAction(event -> handleManageEvents());
-        manageAttendanceButton.setOnAction(event -> handleManageAttendance());
-        profileButton.setOnAction(event -> handleProfile());
+        createEventButton.setOnAction(e -> handleCreateEvent());
+        manageAttendanceButton.setOnAction(e -> handleManageAttendance());
+        profileButton.setOnAction(e -> handleProfile());
     }
     
     private void setupTableColumns() {
@@ -85,21 +82,18 @@ public class CommitteeDashboardController {
         // Set up the actions column with buttons
         actionsColumn.setCellFactory(col -> new TableCell<>() {
             private final HBox buttons = new HBox(5);
-            private final Button viewButton = new Button("View");
             private final Button editButton = new Button("Edit");
             private final Button deleteButton = new Button("Delete");
             
             {
                 buttons.setAlignment(javafx.geometry.Pos.CENTER);
-                viewButton.getStyleClass().add("button-secondary");
                 editButton.getStyleClass().add("button-secondary");
                 deleteButton.getStyleClass().add("button-danger");
                 
-                viewButton.setOnAction(e -> handleViewEvent(getTableRow().getItem()));
                 editButton.setOnAction(e -> handleEditEvent(getTableRow().getItem()));
                 deleteButton.setOnAction(e -> handleDeleteEvent(getTableRow().getItem()));
                 
-                buttons.getChildren().addAll(viewButton, editButton, deleteButton);
+                buttons.getChildren().addAll(editButton, deleteButton);
             }
             
             @Override
@@ -126,28 +120,17 @@ public class CommitteeDashboardController {
                 ));
             } catch (Exception e) {
                 log.error("Failed to load dashboard data", e);
-                showAlert("Error", "Failed to load dashboard data: " + e.getMessage());
+                showError("Failed to load dashboard data: " + e.getMessage());
             }
         });
     }
     
-    @FXML
     private void handleCreateEvent() {
         try {
             navigationManager.navigateToCreateEvent();
         } catch (IOException e) {
             log.error("Failed to navigate to create event", e);
-            showAlert("Error", "Failed to open create event page");
-        }
-    }
-    
-    @FXML
-    private void handleManageEvents() {
-        try {
-            navigationManager.navigateToManageEvents();
-        } catch (IOException e) {
-            log.error("Failed to navigate to manage events", e);
-            showAlert("Error", "Failed to open manage events page");
+            showError("Failed to open create event page");
         }
     }
     
@@ -157,7 +140,7 @@ public class CommitteeDashboardController {
             navigationManager.navigateToManageAttendance();
         } catch (IOException e) {
             log.error("Failed to navigate to manage attendance", e);
-            showAlert("Error", "Failed to open manage attendance page");
+            showError("Failed to open attendance management page");
         }
     }
     
@@ -165,9 +148,19 @@ public class CommitteeDashboardController {
     private void handleProfile() {
         try {
             navigationManager.navigateToProfile();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to navigate to profile", e);
-            showAlert("Error", "Failed to open profile page");
+            showError("Failed to open profile page");
+        }
+    }
+    
+    @FXML
+    private void handleMyProfile() {
+        try {
+            navigationManager.navigateToProfile();
+        } catch (Exception e) {
+            log.error("Failed to navigate to profile", e);
+            showError("Failed to open profile page");
         }
     }
     
@@ -177,7 +170,7 @@ public class CommitteeDashboardController {
             navigationManager.navigateToLogin();
         } catch (IOException e) {
             log.error("Failed to navigate to login", e);
-            showAlert("Error", "Failed to logout");
+            showError("Failed to logout");
         }
     }
     
@@ -191,37 +184,40 @@ public class CommitteeDashboardController {
         try {
             navigationManager.navigateToEventDetails(event.getEventId());
         } catch (IOException e) {
-            showError("Error", "Failed to navigate to event details");
+            log.error("Failed to navigate to event details", e);
+            showError("Failed to open event details");
         }
     }
     
     @FXML
     private void handleEditEvent(Event event) {
         try {
-            navigationManager.navigateToEditEvent(event.getEventId());
+            navigationManager.navigateToManageEvent(event.getEventId());
         } catch (IOException e) {
-            showError("Error", "Failed to navigate to edit event");
+            log.error("Failed to navigate to manage event", e);
+            showError("Failed to open event management page");
         }
     }
     
     @FXML
     private void handleDeleteEvent(Event event) {
-        if (event != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirm Delete");
-            alert.setHeaderText("Delete Event");
-            alert.setContentText("Are you sure you want to delete this event?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Confirm Delete");
+        confirmDialog.setHeaderText(null);
+        confirmDialog.setContentText("Are you sure you want to delete this event?");
+        
+        confirmDialog.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
                 try {
                     eventService.deleteEvent(event.getEventId());
-                    loadDashboardData(); // Refresh the table
+                    loadDashboardData();
+                    showSuccess("Event deleted successfully");
                 } catch (Exception e) {
-                    showError("Error", "Failed to delete event: " + e.getMessage());
+                    log.error("Failed to delete event", e);
+                    showError("Failed to delete event: " + e.getMessage());
                 }
             }
-        }
+        });
     }
     
     private void showAlert(String title, String content) {
@@ -234,12 +230,22 @@ public class CommitteeDashboardController {
         });
     }
     
-    private void showError(String title, String content) {
+    private void showError(String message) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
+            alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText(content);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+
+    private void showSuccess(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
             alert.showAndWait();
         });
     }

@@ -102,6 +102,9 @@ public class Payment {
   public String getTransactionReference() { return transactionReference; }
   public void setTransactionReference(String transactionReference) { this.transactionReference = transactionReference; }
   
+  public String getPaymentProof() { return paymentProof; }
+  public void setPaymentProof(String paymentProof) { this.paymentProof = paymentProof; }
+  
   // Enums
   public enum PaymentMethod {
     BANK_TRANSFER, E_WALLET, CREDIT_CARD, CASH
