@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.corevent.controller.ManageEventController;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -47,8 +49,20 @@ public class NavigationManager {
     loadScene("/fxml/create-event.fxml", "Corevent - Create Event");
   }
   
-  public void navigateToManageEvents() throws IOException {
-    loadScene("/fxml/manage-events.fxml", "Corevent - Manage Events");
+  public void navigateToManageEvent(String eventId) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manage-event.fxml"));
+    loader.setControllerFactory(springContext::getBean);
+    
+    Parent root = loader.load();
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+    
+    ManageEventController controller = loader.getController();
+    controller.setEventId(eventId);
+    
+    primaryStage.setTitle("Corevent - Manage Event");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public void navigateToManageAttendance() throws IOException {

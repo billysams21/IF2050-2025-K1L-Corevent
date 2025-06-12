@@ -67,7 +67,7 @@ public class TicketService {
             ticket.setEvent(event);
             ticket.setParticipant(participant);
             ticket.setPurchaseDate(LocalDateTime.now());
-            ticket.generateQR();
+            ticket.generateQRCode();
 
             // Save ticket
             ticket = save(ticket);

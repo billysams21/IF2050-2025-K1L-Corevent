@@ -32,12 +32,11 @@
             <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
             <TableColumn fx:id="locationColumn" text="Location" prefWidth="150"/>
             <TableColumn fx:id="participantsColumn" text="Participants" prefWidth="100"/>
-            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="200"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="300"/>
         </columns>
     </TableView>
     <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 18 0 0 0;">
         <Button fx:id="createEventButton" text="Create Event" styleClass="button-primary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
-        <Button fx:id="manageEventsButton" text="Manage Events" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
         <Button fx:id="manageAttendanceButton" text="Attendance" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
         <Button fx:id="profileButton" text="Profile" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
     </HBox>
