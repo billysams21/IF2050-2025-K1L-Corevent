@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.MyEvaluationsController" 
+      spacing="20" styleClass="my-evaluations-container">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="10" styleClass="evaluations-header">
+        <Label text="Evaluasi Saya" styleClass="form-title"/>
+        <Label text="Daftar event yang dapat atau sudah Anda evaluasi" styleClass="subtitle"/>
+        <Separator/>
+    </VBox>
+
+    <!-- Statistics -->
+    <HBox spacing="20" styleClass="statistics-container">
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="Event Selesai" styleClass="stat-label"/>
+            <Label fx:id="completedEventsLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="Evaluasi Tersubmit" styleClass="stat-label"/>
+            <Label fx:id="submittedEvaluationsLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS">
+            <Label text="Menunggu Evaluasi" styleClass="stat-label"/>
+            <Label fx:id="pendingEvaluationsLabel" text="0" styleClass="stat-value"/>
+        </VBox>
+    </HBox>
+
+    <!-- Filter Tabs -->
+    <TabPane fx:id="evaluationTabPane" VBox.vgrow="ALWAYS" styleClass="evaluation-tabs">
+        
+        <!-- Tab for events that can be evaluated -->
+        <Tab text="Dapat Dievaluasi" closable="false">
+            <VBox spacing="15">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Event yang Dapat Dievaluasi" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="refreshAvailableButton" text="Refresh" onAction="#handleRefreshAvailable" styleClass="button-secondary"/>
+                </HBox>
+                
+                <TableView fx:id="availableEventsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="availableEventNameColumn" text="Nama Event" prefWidth="250"/>
+                        <TableColumn fx:id="availableDateColumn" text="Tanggal" prefWidth="150"/>
+                        <TableColumn fx:id="availableLocationColumn" text="Lokasi" prefWidth="200"/>
+                        <TableColumn fx:id="availableStatusColumn" text="Status" prefWidth="120"/>
+                        <TableColumn fx:id="availableActionsColumn" text="Aksi" prefWidth="150"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Tidak ada event yang dapat dievaluasi saat ini" styleClass="table-placeholder"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </Tab>
+        
+        <!-- Tab for submitted evaluations -->
+        <Tab text="Sudah Dievaluasi" closable="false">
+            <VBox spacing="15">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="Evaluasi yang Sudah Disubmit" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="refreshSubmittedButton" text="Refresh" onAction="#handleRefreshSubmitted" styleClass="button-secondary"/>
+                </HBox>
+                
+                <TableView fx:id="submittedEvaluationsTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="submittedEventNameColumn" text="Nama Event" prefWidth="250"/>
+                        <TableColumn fx:id="submittedScoreColumn" text="Rating" prefWidth="100"/>
+                        <TableColumn fx:id="submittedFeedbackColumn" text="Komentar" prefWidth="300"/>
+                        <TableColumn fx:id="submittedDateColumn" text="Tanggal Submit" prefWidth="150"/>
+                        <TableColumn fx:id="submittedActionsColumn" text="Aksi" prefWidth="100"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Belum ada evaluasi yang disubmit" styleClass="table-placeholder"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+        </Tab>
+    </TabPane>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" styleClass="action-buttons" alignment="CENTER_RIGHT">
+        <Button text="Kembali ke Dashboard" onAction="#handleBackToDashboard" styleClass="button-primary" prefWidth="180"/>
+    </HBox>
+</VBox> 

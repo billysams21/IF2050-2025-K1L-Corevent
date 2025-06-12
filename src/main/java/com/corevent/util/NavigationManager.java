@@ -153,6 +153,24 @@ public class NavigationManager {
     primaryStage.show();
   }
   
+  public void navigateToEvaluationForm(String eventId) throws IOException {
+    loadScene("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+  }
+  
+  public Stage openEvaluationForm(String eventId) throws IOException {
+    return openNewWindow("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+  }
+  
+  public void goBack() throws IOException {
+    // Simple implementation - navigate back to dashboard based on current user
+    com.corevent.entity.User currentUser = SessionManager.getInstance().getCurrentUser();
+    if (currentUser != null) {
+      navigateToDashboard(currentUser.getRole());
+    } else {
+      navigateToLogin();
+    }
+  }
+  
   public void navigateToDashboard(String role) {
     try {
         if (role != null && role.equals("COMMITTEE")) {
