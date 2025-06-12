@@ -1,19 +1,20 @@
 package com.corevent.controller;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
 
 import com.corevent.config.SpringContext;
-import com.corevent.entity.Committee;
 import com.corevent.entity.Event;
-import com.corevent.entity.User;
-import com.corevent.service.AttendanceService;
 import com.corevent.service.EventService;
 import com.corevent.util.NavigationManager;
 import com.corevent.util.SessionManager;
 
-import javafx.application.Platform;
+// import com.corevent.controller.ParticipantsListController;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,8 +22,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
@@ -32,94 +38,87 @@ import lombok.extern.slf4j.Slf4j;
 public class CommitteeDashboardController {
     
     @FXML private Label welcomeLabel;
-    @FXML private Label roleLabel;
     @FXML private Label totalEventsLabel;
     @FXML private Label upcomingEventsLabel;
     @FXML private Label totalParticipantsLabel;
     
     @FXML private Button createEventButton;
-    @FXML private Button manageEventsButton;
-    @FXML private Button manageAttendanceButton;
-    @FXML private Button profileButton;
+    @FXML private Button refreshButton;
+    @FXML private Button logoutButton;
     
-    @FXML private MenuItem logoutMenuItem;
+    @FXML private TableView<Event> eventsTable;
+    @FXML private TableColumn<Event, String> eventNameColumn;
+    @FXML private TableColumn<Event, String> dateColumn;
+    @FXML private TableColumn<Event, String> locationColumn;
+    @FXML private TableColumn<Event, String> participantsColumn;
+    @FXML private TableColumn<Event, Void> actionsColumn;
     
+    private final ObservableList<Event> eventsList = FXCollections.observableArrayList();
     private final NavigationManager navigationManager;
     private final EventService eventService;
-    private final AttendanceService attendanceService;
     
-    public CommitteeDashboardController(NavigationManager navigationManager, 
-                                      EventService eventService,
-                                      AttendanceService attendanceService) {
+    public CommitteeDashboardController(NavigationManager navigationManager, EventService eventService) {
         this.navigationManager = navigationManager;
         this.eventService = eventService;
-        this.attendanceService = attendanceService;
     }
     
     @FXML
     public void initialize() {
-        setupUserInfo();
-        setupEventHandlers();
+        setupTableColumns();
         loadDashboardData();
-    }
-    
-    private void setupUserInfo() {
-        User currentUser = SessionManager.getInstance().getCurrentUser();
-        if (currentUser instanceof Committee) {
-            Committee committee = (Committee) currentUser;
-            welcomeLabel.setText("Welcome, " + committee.getFullName());
-            roleLabel.setText("Committee Dashboard");
-        }
-    }
-    
-    private void setupEventHandlers() {
-        createEventButton.setOnAction(event -> handleCreateEvent());
-        manageEventsButton.setOnAction(event -> handleManageEvents());
-        manageAttendanceButton.setOnAction(event -> handleManageAttendance());
-        profileButton.setOnAction(event -> handleProfile());
         
-        logoutMenuItem.setOnAction(event -> handleLogout());
+        // Set welcome message
+        welcomeLabel.setText("Welcome, " + SessionManager.getInstance().getCurrentUser().getUsername());
     }
     
-    private void loadDashboardData() {
-        Task<DashboardData> loadTask = new Task<>() {
-            @Override
-            protected DashboardData call() throws Exception {
-                User currentUser = SessionManager.getInstance().getCurrentUser();
-                if (!(currentUser instanceof Committee)) {
-                    throw new IllegalStateException("Current user is not a committee member");
-                }
+    private void setupTableColumns() {
+        eventNameColumn.setCellValueFactory(new PropertyValueFactory<>("eventName"));
+        
+        dateColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getDate()
+                .format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm")))
+        );
+        
+        locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        
+        participantsColumn.setCellValueFactory(cellData -> {
+            Event event = cellData.getValue();
+            return new SimpleStringProperty(event.getCurrentParticipants() + "/" + event.getQuota());
+        });
+        
+        // Add action buttons
+        actionsColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button viewButton = new Button("View");
+            private final Button editButton = new Button("Edit");
+            private final Button participantsButton = new Button("Participants");
+            
+            {
+                viewButton.getStyleClass().add("button-primary-small");
+                editButton.getStyleClass().add("button-secondary-small");
+                participantsButton.getStyleClass().add("button-info-small");
                 
-                Committee committee = (Committee) currentUser;
-                List<Event> committeeEvents = eventService.getCommitteeEvents(committee.getUserId());
-                
-                int totalEvents = committeeEvents.size();
-                int upcomingEvents = (int) committeeEvents.stream()
-                    .filter(Event::isAvailable)
-                    .count();
-                int totalParticipants = committeeEvents.stream()
-                    .mapToInt(Event::getCurrentParticipants)
-                    .sum();
-                
-                return new DashboardData(totalEvents, upcomingEvents, totalParticipants);
+                viewButton.setOnAction(e -> viewEvent(getTableView().getItems().get(getIndex())));
+                editButton.setOnAction(e -> editEvent(getTableView().getItems().get(getIndex())));
+                participantsButton.setOnAction(e -> viewParticipants(getTableView().getItems().get(getIndex())));
             }
-        };
-        
-        loadTask.setOnSucceeded(event -> {
-            DashboardData data = loadTask.getValue();
-            totalEventsLabel.setText(String.valueOf(data.totalEvents()));
-            upcomingEventsLabel.setText(String.valueOf(data.upcomingEvents()));
-            totalParticipantsLabel.setText(String.valueOf(data.totalParticipants()));
+            
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttons = new HBox(5);
+                    buttons.getChildren().addAll(viewButton, editButton, participantsButton);
+                    setGraphic(buttons);
+                }
+            }
         });
         
-        loadTask.setOnFailed(event -> {
-            log.error("Failed to load dashboard data", loadTask.getException());
-            showAlert("Error", "Failed to load dashboard data");
-        });
-        
-        new Thread(loadTask).start();
+        eventsTable.setItems(eventsList);
     }
     
+    @FXML
     private void handleCreateEvent() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/create-event.fxml"));
@@ -134,96 +133,140 @@ public class CommitteeDashboardController {
             
             stage.showAndWait();
             
-            // Refresh dashboard data after creating event
+            // Refresh events list after creation
             loadDashboardData();
             
         } catch (Exception e) {
-            log.error("Failed to open create event", e);
-            showAlert("Error", "Failed to open create event");
+            e.printStackTrace();
+            showAlert("Error", "Failed xto open create event dialog");
         }
     }
     
-    private void handleManageEvents() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manage-events.fxml"));
-            loader.setControllerFactory(SpringContext::getBean);
-            Parent root = loader.load();
-            
-            Stage stage = new Stage();
-            stage.setTitle("Manage Events");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(manageEventsButton.getScene().getWindow());
-            
-            stage.showAndWait();
-            
-            // Refresh dashboard data after managing events
-            loadDashboardData();
-            
-        } catch (Exception e) {
-            log.error("Failed to open manage events", e);
-            showAlert("Error", "Failed to open manage events");
-        }
+    @FXML
+    private void handleRefresh() {
+        loadDashboardData();
     }
     
-    private void handleManageAttendance() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/manage-attendance.fxml"));
-            loader.setControllerFactory(SpringContext::getBean);
-            Parent root = loader.load();
-            
-            Stage stage = new Stage();
-            stage.setTitle("Manage Attendance");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(manageAttendanceButton.getScene().getWindow());
-            
-            stage.showAndWait();
-            
-        } catch (Exception e) {
-            log.error("Failed to open manage attendance", e);
-            showAlert("Error", "Failed to open manage attendance");
-        }
-    }
-    
-    private void handleProfile() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/profile.fxml"));
-            loader.setControllerFactory(SpringContext::getBean);
-            Parent root = loader.load();
-            
-            Stage stage = new Stage();
-            stage.setTitle("My Profile");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(profileButton.getScene().getWindow());
-            
-            stage.showAndWait();
-            
-        } catch (Exception e) {
-            log.error("Failed to open profile", e);
-            showAlert("Error", "Failed to open profile");
-        }
-    }
-    
+    @FXML
     private void handleLogout() {
-        SessionManager.getInstance().clearSession();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Logout Confirmation");
+        alert.setHeaderText("Are you sure you want to logout?");
+        
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            SessionManager.getInstance().clearSession();
+            try {
+                navigationManager.navigateToLogin();
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "Failed to navigate to login page");
+            }
+        }
+    }
+    
+    private void loadDashboardData() {
+        refreshButton.setDisable(true);
+        
+        Task<DashboardData> loadTask = new Task<>() {
+            @Override
+            protected DashboardData call() throws Exception {
+                List<Event> events = eventService.getCommitteeEvents(
+                    SessionManager.getInstance().getCurrentUser().getUserId()
+                );
+                
+                int totalEvents = events.size();
+                int upcomingEvents = (int) events.stream()
+                    .filter(Event::isAvailable)
+                    .count();
+                int totalParticipants = events.stream()
+                    .mapToInt(Event::getCurrentParticipants)
+                    .sum();
+                
+                return new DashboardData(events, totalEvents, upcomingEvents, totalParticipants);
+            }
+        };
+        
+        loadTask.setOnSucceeded(e -> {
+            DashboardData data = loadTask.getValue();
+            eventsList.setAll(data.events);
+            totalEventsLabel.setText(String.valueOf(data.totalEvents));
+            upcomingEventsLabel.setText(String.valueOf(data.upcomingEvents));
+            totalParticipantsLabel.setText(String.valueOf(data.totalParticipants));
+            refreshButton.setDisable(false);
+        });
+        
+        loadTask.setOnFailed(e -> {
+            showAlert("Error", "Failed to load dashboard data");
+            refreshButton.setDisable(false);
+        });
+        
+        new Thread(loadTask).start();
+    }
+    
+    private void viewParticipants(Event event) {
+        // try {
+        //     FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/participants-list.fxml"));
+        //     loader.setControllerFactory(SpringContext::getBean);
+        //     Parent root = loader.load();
+            
+        //     ParticipantsListController controller = loader.getController();
+        //     controller.setEvent(event);
+            
+        //     Stage stage = new Stage();
+        //     stage.setTitle("Participants - " + event.getEventName());
+        //     stage.setScene(new Scene(root));
+        //     stage.initModality(Modality.APPLICATION_MODAL);
+        //     stage.show();
+            
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     showAlert("Error", "Failed to load participants list");
+        // }
+    }
+    
+    private void viewEvent(Event event) {
+        // Implement view event details
+    }
+    
+    private void editEvent(Event event) {
+        // Implement edit event
+    }
+    
+    private void navigateToLogin() {
         try {
-            navigationManager.navigateToLogin();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            loader.setControllerFactory(SpringContext::getBean);
+            Parent root = loader.load();
+            
+            Stage stage = (Stage) createEventButton.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Corevent - Login");
+            stage.centerOnScreen();
+            
         } catch (Exception e) {
-            log.error("Failed to navigate to login", e);
-            showAlert("Error", "Failed to logout");
+            e.printStackTrace();
         }
     }
     
     private void showAlert(String title, String content) {
-        Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(title);
-            alert.setContentText(content);
-            alert.showAndWait();
-        });
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
     
-    private record DashboardData(int totalEvents, int upcomingEvents, int totalParticipants) {}
+    // Inner class for dashboard data
+    private static class DashboardData {
+        final List<Event> events;
+        final int totalEvents;
+        final int upcomingEvents;
+        final int totalParticipants;
+        
+        DashboardData(List<Event> events, int totalEvents, int upcomingEvents, int totalParticipants) {
+            this.events = events;
+            this.totalEvents = totalEvents;
+            this.upcomingEvents = upcomingEvents;
+            this.totalParticipants = totalParticipants;
+        }
+    }
 }
