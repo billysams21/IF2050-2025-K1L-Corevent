@@ -360,9 +360,9 @@
 
 .custom-alert {
     -fx-font-size: 15px;
-    -fx-background-color: #e6ffff;
+    -fx-background-color: #f8ffff;
     -fx-background-radius: 10;
-    background-color: #e6fffd;
+    background-color: #ffffff;
 }
 .custom-alert .label {
     -fx-text-fill: #d35400;

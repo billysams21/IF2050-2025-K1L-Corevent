@@ -50,6 +50,7 @@ public class CommitteeDashboardController {
     @FXML private TableColumn<Event, Void> actionsColumn;
     
     @FXML private Button createEventButton;
+    @FXML private Button manageParticipantsButton;
     @FXML private Button manageAttendanceButton;
     @FXML private Button profileButton;
     
@@ -69,6 +70,7 @@ public class CommitteeDashboardController {
     
     private void setupEventHandlers() {
         createEventButton.setOnAction(e -> handleCreateEvent());
+        manageParticipantsButton.setOnAction(e -> handleManageParticipants());
         manageAttendanceButton.setOnAction(e -> handleManageAttendance());
         profileButton.setOnAction(e -> handleProfile());
     }
@@ -131,6 +133,21 @@ public class CommitteeDashboardController {
         } catch (IOException e) {
             log.error("Failed to navigate to create event", e);
             showError("Failed to open create event page");
+        }
+    }
+    
+    @FXML
+    private void handleManageParticipants() {
+        try {
+            Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+            if (selectedEvent == null) {
+                showError("Please select an event first");
+                return;
+            }
+            navigationManager.navigateToParticipantManagement(selectedEvent.getEventId());
+        } catch (IOException e) {
+            log.error("Failed to navigate to participant management", e);
+            showError("Failed to open participant management page");
         }
     }
     

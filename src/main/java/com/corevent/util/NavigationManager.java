@@ -68,7 +68,7 @@ public class NavigationManager {
     if (event == null) {
         throw new IllegalArgumentException("Event not found");
     }
-    controller.setEvent(event);
+    controller.setEventId(eventId);
     
     primaryStage.setTitle("Corevent - Manage Event");
     primaryStage.setScene(scene);
