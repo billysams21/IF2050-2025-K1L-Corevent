@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.EvaluationController" 
+      spacing="20" styleClass="evaluation-form-container">
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- Header -->
+    <VBox spacing="10" styleClass="form-header">
+        <Label text="Evaluasi Event" styleClass="form-title"/>
+        <Separator/>
+    </VBox>
+
+    <!-- Event Information -->
+    <VBox spacing="15" styleClass="event-info-section">
+        <Label text="Informasi Event" styleClass="section-title"/>
+        
+        <GridPane hgap="15" vgap="10" styleClass="event-info-grid">
+            <columnConstraints>
+                <ColumnConstraints minWidth="120" prefWidth="120"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            
+            <Label text="Nama Event:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label fx:id="eventNameLabel" text="-" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+            
+            <Label text="Tanggal:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="eventDateLabel" text="-" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            
+            <Label text="Lokasi:" styleClass="info-label" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="eventLocationLabel" text="-" styleClass="info-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        </GridPane>
+    </VBox>
+
+    <!-- Rating Section -->
+    <VBox spacing="15" styleClass="rating-section">
+        <Label text="Berikan Rating (1-5 Bintang)" styleClass="section-title"/>
+        <Label text="Pilih rating yang sesuai dengan pengalaman Anda:" styleClass="section-subtitle"/>
+        
+        <HBox fx:id="ratingContainer" spacing="20" styleClass="rating-buttons-container">
+            <!-- Rating buttons will be added dynamically by controller -->
+        </HBox>
+    </VBox>
+
+    <!-- Feedback Section -->
+    <VBox spacing="15" styleClass="feedback-section" VBox.vgrow="ALWAYS">
+        <Label text="Komentar dan Saran (Opsional)" styleClass="section-title"/>
+        <Label text="Berikan komentar atau saran untuk perbaikan event kedepannya:" styleClass="section-subtitle"/>
+        
+        <TextArea fx:id="feedbackTextArea" 
+                  promptText="Tuliskan komentar atau saran Anda di sini..." 
+                  wrapText="true" 
+                  prefRowCount="5"
+                  maxHeight="120"
+                  styleClass="feedback-textarea"
+                  VBox.vgrow="ALWAYS"/>
+        
+        <Label text="Maksimal 500 karakter" styleClass="character-limit-label"/>
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="15" styleClass="action-buttons" alignment="CENTER_RIGHT">
+        <Button fx:id="cancelButton" text="Batal" onAction="#handleCancel" styleClass="button-secondary" prefWidth="100"/>
+        <Button fx:id="submitButton" text="Kirim Evaluasi" onAction="#handleSubmitEvaluation" styleClass="button-primary" prefWidth="150"/>
+    </HBox>
+</VBox> 
