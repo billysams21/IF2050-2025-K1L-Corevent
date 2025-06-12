@@ -13,6 +13,7 @@ Corevent Desktop adalah aplikasi manajemen acara kampus yang terintegrasi, diran
 - **Hibernate/JPA** - Object-Relational Mapping
 
 ### Database
+- **H2** - Development database (file-based)
 - **PostgreSQL** - Production database dengan sinkronisasi server
 
 ### Additional Libraries
@@ -21,6 +22,7 @@ Corevent Desktop adalah aplikasi manajemen acara kampus yang terintegrasi, diran
 - **Apache PDFBox** - PDF generation untuk sertifikat
 - **BCrypt** - Password encryption
 - **JWT** - Token-based authentication
+- **Flyway** - Database migration tool
 
 ## 📁 Project Structure
 
@@ -40,6 +42,7 @@ corevent-desktop/
 │   ├── fxml/                # FXML view files
 │   ├── css/                 # Styling files
 │   ├── images/              # Icons & images
+│   ├── db/migration/        # Database migration scripts
 │   └── application.properties
 └── src/test/                # Unit & integration tests
 ```
@@ -74,6 +77,16 @@ atau
 ```bash
 mvn javafx:run
 ```
+
+### Database Access
+
+#### H2 Console (Development)
+1. Start the application
+2. Open browser and navigate to: `http://localhost:8888/h2-console`
+3. Use these credentials:
+   - JDBC URL: `jdbc:h2:file:./corevent_db`
+   - Username: `sa`
+   - Password: `password`
 
 ### Building for Production
 
@@ -132,6 +145,24 @@ Aplikasi desktop berkomunikasi dengan backend server melalui REST API:
 - Automatic retry dengan exponential backoff
 - Offline mode fallback
 
+### API Endpoints
+
+#### Events
+- `GET /api/events` - Get all events
+- `GET /api/events/{id}` - Get event by ID
+- `POST /api/events` - Create new event
+- `PUT /api/events/{id}` - Update event
+- `DELETE /api/events/{id}` - Delete event
+
+#### Participants
+- `GET /api/events/{id}/participants` - Get event participants
+- `POST /api/events/{id}/participants` - Add participant
+- `DELETE /api/events/{id}/participants/{participantId}` - Remove participant
+
+#### Attendance
+- `POST /api/events/{id}/check-in` - Check-in participant
+- `GET /api/events/{id}/attendance` - Get attendance list
+
 ## 📊 Database Schema
 
 ### Main Entities
@@ -163,16 +194,40 @@ mvn verify
 spring.profiles.active=development
 
 # Database
-spring.datasource.url=jdbc:h2:file:./data/corevent_dev
-spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:h2:file:./corevent_db
+spring.jpa.hibernate.ddl-auto=validate
 
 # API Configuration
-api.base-url=https://belum.ada
+api.base-url=
 api.timeout=30
 
 # Offline sync
 offline.sync-interval=300000
 ```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Issues**
+   - Check if H2 database files exist
+   - Verify database credentials
+   - Check if port 8888 is available
+
+2. **Application Won't Start**
+   - Check Java version (must be 17+)
+   - Verify all dependencies are installed
+   - Check logs in `logs/corevent.log`
+
+3. **UI Issues**
+   - Clear JavaFX cache
+   - Check if JavaFX modules are properly loaded
+   - Verify FXML files are in correct location
+
+### Logs
+- Application logs are stored in `logs/corevent.log`
+- Log level can be configured in `application.properties`
+- Use `logging.level.com.corevent=DEBUG` for detailed logs
 
 ## 📄 License
 
@@ -180,9 +235,11 @@ This project is proprietary software. All rights reserved.
 
 ## 👥 Team
 
-- Project Owner: Livia
-- Lead Developer: Billy
-- UI/UX Designer: Dzulfaqor
-- 
-- 
-- 
+👥 Team
+- Project Owner: Livia Arumsari
+- Lead Developer: Billy Samuel Setiawan (18222039)
+- UI/UX Designer: Dzulfaqor Ali Dipanegara (18222017)
+- Backend Developer: Benedicta Eryka Santosa (18222031)
+- Frontend Developer (JavaFX): Kezia Caren Cahyadi (18222041)
+- Database & API Integration Developer: Ananda Farhan Raihandra (18222084)
+- QA Engineer & DevOps: Dahayu Ramaniya Aurasindu (18222099)
