@@ -53,6 +53,7 @@ public class CommitteeDashboardController {
     @FXML private Button createEventButton;
     @FXML private Button manageEventsButton;
     @FXML private Button manageAttendanceButton;
+    @FXML private Button sendNotificationButton;
     @FXML private Button profileButton;
     
     @FXML
@@ -73,6 +74,7 @@ public class CommitteeDashboardController {
         createEventButton.setOnAction(event -> handleCreateEvent());
         manageEventsButton.setOnAction(event -> handleManageEvents());
         manageAttendanceButton.setOnAction(event -> handleManageAttendance());
+        sendNotificationButton.setOnAction(event -> handleSendNotification());
         profileButton.setOnAction(event -> handleProfile());
     }
     
@@ -158,6 +160,16 @@ public class CommitteeDashboardController {
         } catch (IOException e) {
             log.error("Failed to navigate to manage attendance", e);
             showAlert("Error", "Failed to open manage attendance page");
+        }
+    }
+    
+    @FXML
+    private void handleSendNotification() {
+        try {
+            navigationManager.navigateToSendNotification();
+        } catch (IOException e) {
+            log.error("Failed to navigate to send notification", e);
+            showAlert("Error", "Failed to open send notification page");
         }
     }
     
