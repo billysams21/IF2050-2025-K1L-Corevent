@@ -80,10 +80,10 @@ public class NotificationService {
         int successCount = 0;
         int failureCount = 0;
         
-        // Loop untuk setiap peserta
+        // Loop through each participant
         for (String participantID : participantList) {
             try {
-                // Cari data peserta
+                // Find participant data
                 Participant participant = getParticipantByID(Long.parseLong(participantID));
                 if (participant == null) {
                     log.warn("Participant with ID {} not found", participantID);
@@ -95,7 +95,7 @@ public class NotificationService {
                 Notification notification = new Notification(title, message, event, committee, participant);
                 notification.setStatus(Notification.NotificationStatus.PENDING);
                 
-                // Kirim notifikasi (email)
+                // Send email notification
                 String result = sendEmailNotification(participant.getEmail(), notification);
                 
                 if ("SUCCESS".equals(result)) {
@@ -124,12 +124,12 @@ public class NotificationService {
     }
     
     /**
-     * Mendapatkan daftar peserta untuk event tertentu
+     * Get participants list for specific event
      */
     public List<Participant> getEventParticipants(String eventID) {
         List<Participant> participants = new ArrayList<>();
         
-        // Implementasi untuk mendapatkan peserta dari event
+        // Implementation to get participants from event
         // Untuk saat ini, return semua participant sebagai contoh
         List<User> allUsers = userRepository.findAll();
         for (User user : allUsers) {
@@ -142,7 +142,7 @@ public class NotificationService {
     }
     
     /**
-     * Mengirim email notification
+     * Send email notification
      */
     private String sendEmailNotification(String email, Notification notification) {
         try {

@@ -84,7 +84,7 @@ public class SendNotificationController implements Initializable {
     
     private void setupEventComboBox() {
         eventComboBox.setItems(events);
-        eventComboBox.setPromptText("-- Pilih Acara --");
+        eventComboBox.setPromptText("-- Select Event --");
         
         // Converter untuk menampilkan nama event
         eventComboBox.setConverter(new javafx.util.StringConverter<Event>() {
@@ -125,8 +125,8 @@ public class SendNotificationController implements Initializable {
     }
     
     private void setupForm() {
-        titleField.setPromptText("Contoh: Pengingat Pembayaran");
-        messageArea.setPromptText("Tulis isi pesan yang akan dikirim...");
+        titleField.setPromptText("Example: Payment Reminder");
+        messageArea.setPromptText("Write your notification message here...");
         messageArea.setWrapText(true);
         
         loadingIndicator.setVisible(false);
@@ -165,7 +165,7 @@ public class SendNotificationController implements Initializable {
         
         loadEventsTask.setOnFailed(e -> {
             log.error("Failed to load events", e.getSource().getException());
-            showError("Gagal memuat daftar acara");
+            showError("Failed to load events list");
         });
         
         new Thread(loadEventsTask).start();
@@ -196,7 +196,7 @@ public class SendNotificationController implements Initializable {
         
         loadParticipantsTask.setOnFailed(e -> {
             log.error("Failed to load participants", e.getSource().getException());
-            showError("Gagal memuat daftar peserta");
+            showError("Failed to load participants list");
         });
         
         new Thread(loadParticipantsTask).start();
@@ -229,14 +229,14 @@ public class SendNotificationController implements Initializable {
             .collect(Collectors.toList());
         
         if (selectedParticipantIds.isEmpty()) {
-            showError("Pilih setidaknya satu peserta");
+            showError("Please select at least one participant");
             return;
         }
         
         // Disable form during sending
         setFormDisabled(true);
         loadingIndicator.setVisible(true);
-        showStatus("Mengirim notifikasi...");
+        showStatus("Sending notifications...");
         
         // Send notifications in background
         Task<NotificationResult> sendTask = new Task<>() {
@@ -272,7 +272,7 @@ public class SendNotificationController implements Initializable {
             Platform.runLater(() -> {
                 loadingIndicator.setVisible(false);
                 setFormDisabled(false);
-                showError("Gagal mengirim notifikasi: " + e.getSource().getException().getMessage());
+                showError("Failed to send notifications: " + e.getSource().getException().getMessage());
             });
         });
         
