@@ -47,6 +47,9 @@ public abstract class User {
   @Enumerated(EnumType.STRING)
   private AccountStatus status = AccountStatus.ACTIVE;
   
+  @Column(nullable = false)
+  private boolean enabled = true;
+  
   @Column(name = "last_login")
   private LocalDateTime lastLogin;
   
@@ -86,7 +89,7 @@ public abstract class User {
   public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
   
   public String getRole() {
-    return roles.isEmpty() ? null : roles.iterator().next();
+    return role != null ? role.name() : null;
   }
   
   public boolean isEnabled() {

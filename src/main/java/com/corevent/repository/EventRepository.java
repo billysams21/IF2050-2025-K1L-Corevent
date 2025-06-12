@@ -27,7 +27,7 @@ public interface EventRepository extends JpaRepository<Event, String> {
                                           @Param("startDate") LocalDateTime startDate, 
                                           @Param("endDate") LocalDateTime endDate);
   
-  @Query("SELECT e FROM Event e JOIN e.committees c WHERE c.userId = :committeeId")
+  @Query("SELECT e FROM Event e JOIN e.committees c WHERE c.id = :committeeId")
   List<Event> findByCommitteeId(@Param("committeeId") String committeeId);
   
   @Query("SELECT e FROM Event e WHERE e.eventType = :eventType")
@@ -35,4 +35,7 @@ public interface EventRepository extends JpaRepository<Event, String> {
   
   @Query("SELECT e FROM Event e WHERE e.currentParticipants < e.quota")
   List<Event> findAvailableEvents();
+  
+  @Query("SELECT e FROM Event e JOIN e.committees c WHERE c.id = :userId")
+  List<Event> findByCommitteesUserId(@Param("userId") String userId);
 }
