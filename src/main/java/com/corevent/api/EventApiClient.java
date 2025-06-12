@@ -60,7 +60,7 @@ public class EventApiClient extends BaseApiClient {
         
         @PUT("/api/events/{eventId}")
         Call<Event> updateEvent(@Path("eventId") String eventId, 
-                               @Body UpdateEventRequest request);
+                                @Body UpdateEventRequest request);
         
         @GET("/api/events/{eventId}")
         Call<Event> getEvent(@Path("eventId") String eventId);
