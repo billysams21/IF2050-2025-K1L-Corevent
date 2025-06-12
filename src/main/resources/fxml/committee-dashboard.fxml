@@ -4,6 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
+<?import com.corevent.util.HBoxCellFactory?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.CommitteeDashboardController">
     <padding>
@@ -14,7 +15,7 @@
     <HBox styleClass="dashboard-header" alignment="CENTER_LEFT" spacing="20">
         <VBox>
             <Label fx:id="welcomeLabel" styleClass="welcome-label"/>
-            <Label text="Committee Dashboard" styleClass="subtitle-label"/>
+            <Label fx:id="roleLabel" text="Committee Dashboard" styleClass="subtitle-label"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="Logout" onAction="#handleLogout" styleClass="button-secondary"/>
@@ -41,13 +42,17 @@
         <HBox alignment="CENTER_LEFT" spacing="10">
             <Label text="Events" styleClass="section-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button fx:id="createEventButton" text="Create Event" onAction="#handleCreateEvent" styleClass="button-primary"/>
+            <Button fx:id="createEventButton" text="Create Event" onAction="#handleCreateEvent" styleClass="action-button"/>
+            <Button fx:id="manageEventsButton" text="Manage Events" onAction="#handleManageEvents" styleClass="action-button"/>
+            <Button fx:id="manageAttendanceButton" text="Manage Attendance" onAction="#handleManageAttendance" styleClass="action-button"/>
+            <Button fx:id="profileButton" text="Profile" onAction="#handleProfile" styleClass="action-button"/>
+            <Button fx:id="myProfileButton" text="My Profile" onAction="#handleMyProfile" />
             <Button fx:id="refreshButton" text="Refresh" onAction="#handleRefresh" styleClass="button-secondary"/>
         </HBox>
 
         <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="eventNameColumn" text="Event Name" prefWidth="200"/>
+                <TableColumn fx:id="nameColumn" text="Event Name" prefWidth="200"/>
                 <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
                 <TableColumn fx:id="locationColumn" text="Location" prefWidth="150"/>
                 <TableColumn fx:id="participantsColumn" text="Participants" prefWidth="100"/>
