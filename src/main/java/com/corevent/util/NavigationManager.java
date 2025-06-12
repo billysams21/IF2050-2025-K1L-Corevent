@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.corevent.controller.BuyTicketController;
 import com.corevent.controller.EvaluationController;
+import com.corevent.controller.EventDetailsViewController;
 import com.corevent.controller.ManageEventController;
 import com.corevent.controller.ParticipantManagementViewController;
 import com.corevent.entity.Event;
@@ -90,7 +91,22 @@ public class NavigationManager {
   }
   
   public void navigateToEventDetails(String eventId) throws IOException {
-    loadScene("/fxml/event-details.fxml", "Corevent - Event Details");
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/event-details-view.fxml"));
+    loader.setControllerFactory(springContext::getBean);
+    Parent root = loader.load();
+    
+    EventDetailsViewController controller = loader.getController();
+    Event event = eventService.findById(eventId);
+    if (event != null) {
+        controller.setEvent(event);
+    }
+    
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
+    
+    primaryStage.setTitle("Event Details");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public void navigateToEditEvent(String eventId) throws IOException {

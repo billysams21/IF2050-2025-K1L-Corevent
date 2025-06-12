@@ -36,6 +36,7 @@ public class ManageEventController {
     @FXML private TextField eventNameField;
     @FXML private DatePicker datePicker;
     @FXML private TextField timeField;
+    @FXML private TextField endTimeField;
     @FXML private TextField locationField;
     @FXML private TextField quotaField;
     @FXML private ComboBox<String> eventTypeCombo;
@@ -74,6 +75,7 @@ public class ManageEventController {
                 eventNameField.setText(event.getEventName());
                 datePicker.setValue(event.getDate().toLocalDate());
                 timeField.setText(event.getDate().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+                endTimeField.setText(event.getEndTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm")));
                 locationField.setText(event.getLocation());
                 quotaField.setText(String.valueOf(event.getQuota()));
                 eventTypeCombo.setValue(event.getEventType().name());
@@ -112,7 +114,9 @@ public class ManageEventController {
             // Combine date and time
             LocalDate date = datePicker.getValue();
             LocalTime time = LocalTime.parse(timeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
+            LocalTime endTime = LocalTime.parse(endTimeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
             existingEvent.setDate(LocalDateTime.of(date, time));
+            existingEvent.setEndTime(LocalDateTime.of(date, endTime));
             
             existingEvent.setLocation(locationField.getText().trim());
             existingEvent.setQuota(Integer.parseInt(quotaField.getText().trim()));
@@ -175,7 +179,11 @@ public class ManageEventController {
             return false;
         }
         if (timeField.getText().trim().isEmpty()) {
-            showError("Time is required");
+            showError("Start time is required");
+            return false;
+        }
+        if (endTimeField.getText().trim().isEmpty()) {
+            showError("End time is required");
             return false;
         }
         if (locationField.getText().trim().isEmpty()) {
@@ -194,6 +202,32 @@ public class ManageEventController {
             showError("Ticket price is required for paid events");
             return false;
         }
+        if (termsField.getText().trim().isEmpty()) {
+            showError("Terms and conditions are required");
+            return false;
+        }
+        if (descriptionField.getText().trim().isEmpty()) {
+            showError("Description is required");
+            return false;
+        }
+
+        // Validate time format
+        try {
+            LocalTime.parse(timeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
+            LocalTime.parse(endTimeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
+        } catch (DateTimeParseException e) {
+            showError("Invalid time format. Please use HH:mm format (e.g., 14:30)");
+            return false;
+        }
+
+        // Validate end time is after start time
+        LocalTime startTime = LocalTime.parse(timeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
+        LocalTime endTime = LocalTime.parse(endTimeField.getText().trim(), DateTimeFormatter.ofPattern("HH:mm"));
+        if (!endTime.isAfter(startTime)) {
+            showError("End time must be after start time");
+            return false;
+        }
+
         return true;
     }
 
