@@ -64,6 +64,12 @@ public abstract class User {
   @Column(name = "created_at")
   private LocalDateTime createdAt;
   
+  @Column(nullable = false)
+  private String fullName;
+  
+  @Column(nullable = false)
+  private String phoneNumber;
+  
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();
@@ -107,6 +113,12 @@ public abstract class User {
   public void setActive(boolean active) {
     this.status = active ? AccountStatus.ACTIVE : AccountStatus.DISABLED;
   }
+
+  public String getFullName() { return fullName; }
+  public void setFullName(String fullName) { this.fullName = fullName; }
+  
+  public String getPhoneNumber() { return phoneNumber; }
+  public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
 
   public enum UserRole {
     COMMITTEE,

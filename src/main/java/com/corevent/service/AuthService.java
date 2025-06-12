@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.corevent.dto.auth.LoginResponse;
+import com.corevent.entity.Committee;
+import com.corevent.entity.Participant;
 import com.corevent.entity.User;
 import com.corevent.repository.UserRepository;
 import com.corevent.security.JwtTokenUtil;

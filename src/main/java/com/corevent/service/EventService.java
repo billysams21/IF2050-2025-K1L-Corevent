@@ -63,6 +63,28 @@ public class EventService {
         return eventRepository.findByCommitteesUserId(committeeId);
     }
     
+    public List<Event> findByCommitteesUserId(String userId) {
+        return eventRepository.findByCommitteesUserId(userId);
+    }
+    
+    public void deleteEvent(String eventId) {
+        Event event = findById(eventId);
+        if (event != null) {
+            // Delete from local database
+            eventRepository.deleteById(eventId);
+            
+            // Try to sync with server
+            CompletableFuture.runAsync(() -> {
+                try {
+                    eventApiClient.deleteEvent(eventId).execute();
+                } catch (Exception e) {
+                    // Queue for later sync
+                    syncService.queueEventSync(event);
+                }
+            });
+        }
+    }
+    
     private CreateEventRequest toCreateEventRequest(Event event) {
         return new CreateEventRequest(
             event.getEventName(),

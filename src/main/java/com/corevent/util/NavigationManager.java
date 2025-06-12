@@ -45,6 +45,26 @@ public class NavigationManager {
     loadScene("/fxml/create-event.fxml", "Corevent - Create Event");
   }
   
+  public void navigateToManageEvents() throws IOException {
+    loadScene("/fxml/manage-events.fxml", "Corevent - Manage Events");
+  }
+  
+  public void navigateToManageAttendance() throws IOException {
+    loadScene("/fxml/manage-attendance.fxml", "Corevent - Manage Attendance");
+  }
+  
+  public void navigateToProfile() throws IOException {
+    loadScene("/fxml/profile.fxml", "Corevent - Profile");
+  }
+  
+  public void navigateToEventDetails(String eventId) throws IOException {
+    loadScene("/fxml/event-details.fxml", "Corevent - Event Details");
+  }
+  
+  public void navigateToEditEvent(String eventId) throws IOException {
+    loadScene("/fxml/edit-event.fxml", "Corevent - Edit Event");
+  }
+  
   public void navigateToParticipantManagement() throws IOException {
     loadScene("/fxml/participant-management.fxml", "Corevent - Participant Management");
   }
@@ -55,6 +75,34 @@ public class NavigationManager {
   
   public void navigateToEvaluationResults() throws IOException {
     loadScene("/fxml/evaluation-results.fxml", "Corevent - Evaluation Results");
+  }
+  
+  public void navigateToBrowseEvents() throws IOException {
+    loadScene("/fxml/browse-events.fxml", "Corevent - Browse Events");
+  }
+  
+  public void navigateToMyTickets() throws IOException {
+    loadScene("/fxml/my-tickets.fxml", "Corevent - My Tickets");
+  }
+  
+  public void navigateToMyEvaluations() throws IOException {
+    loadScene("/fxml/my-evaluations.fxml", "Corevent - My Evaluations");
+  }
+  
+  public void navigateToDashboard(String role) {
+    try {
+        if (role != null && role.equals("COMMITTEE")) {
+            navigateToCommitteeDashboard();
+        } else if (role != null && role.equals("PARTICIPANT")) {
+            navigateToParticipantDashboard();
+        } else {
+            log.error("Unknown role: {}", role);
+            throw new IllegalArgumentException("Invalid user role");
+        }
+    } catch (Exception e) {
+        log.error("Failed to load dashboard", e);
+        throw new RuntimeException("Error loading dashboard", e);
+    }
   }
   
   private void loadScene(String fxmlPath, String title) throws IOException {

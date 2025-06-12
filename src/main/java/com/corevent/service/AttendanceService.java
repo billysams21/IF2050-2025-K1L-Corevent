@@ -23,21 +23,21 @@ public class AttendanceService {
         return attendanceRepository.save(attendance);
     }
     
-    public Attendance findByEventIdAndParticipantId(String eventId, String participantId) {
+    public Attendance findByEventIdAndParticipantId(String eventId, Long participantId) {
         return attendanceRepository.findByEventIdAndParticipantId(eventId, participantId)
             .orElse(null);
     }
     
     public int countPresentByEventId(String eventId) {
-        return attendanceRepository.countPresentByEventId(eventId);
+        return (int) attendanceRepository.countPresentByEventId(eventId);
     }
     
     public int countByEventId(String eventId) {
-        return attendanceRepository.countByEventId(eventId);
+        return (int) attendanceRepository.countByEventId(eventId);
     }
     
     public Attendance checkIn(Participant participant, Event event) {
-        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getUserId());
+        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getId());
         
         if (attendance == null) {
             attendance = new Attendance();
@@ -52,7 +52,7 @@ public class AttendanceService {
     }
     
     public Attendance markAbsent(Participant participant, Event event) {
-        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getUserId());
+        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getId());
         
         if (attendance == null) {
             attendance = new Attendance();
@@ -66,7 +66,7 @@ public class AttendanceService {
     }
     
     public Attendance markLate(Participant participant, Event event) {
-        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getUserId());
+        Attendance attendance = findByEventIdAndParticipantId(event.getEventId(), participant.getId());
         
         if (attendance == null) {
             attendance = new Attendance();
@@ -78,5 +78,9 @@ public class AttendanceService {
         attendance.setCheckInTime(LocalDateTime.now());
         
         return save(attendance);
+    }
+    
+    public void deleteByEventId(String eventId) {
+        attendanceRepository.deleteByEventId(eventId);
     }
 } 
