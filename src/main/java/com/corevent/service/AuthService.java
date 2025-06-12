@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.corevent.entity.Committee;
+import com.corevent.entity.Participant;
 import com.corevent.entity.User;
 import com.corevent.repository.UserRepository;
 
@@ -48,6 +50,55 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public User registerCommittee(String username, String password, String email, 
+                                 String fullName, String department, String position, String phoneNumber) {
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Committee committee = new Committee();
+        committee.setUsername(username);
+        committee.setPassword(passwordEncoder.encode(password));
+        committee.setEmail(email);
+        committee.setFullName(fullName);
+        committee.setDepartment(department);
+        committee.setPosition(position);
+        committee.setPhoneNumber(phoneNumber);
+        committee.setRole(User.UserRole.COMMITTEE);
+        committee.setEnabled(true);
+        committee.getRoles().add("COMMITTEE");
+
+        return userRepository.save(committee);
+    }
+
+    @Transactional
+    public User registerParticipant(String username, String password, String email, 
+                                   String fullName, String phoneNumber, String institution) {
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Participant participant = new Participant();
+        participant.setUsername(username);
+        participant.setPassword(passwordEncoder.encode(password));
+        participant.setEmail(email);
+        participant.setFullName(fullName);
+        participant.setPhoneNumber(phoneNumber);
+        participant.setInstitution(institution);
+        participant.setRole(User.UserRole.PARTICIPANT);
+        participant.setEnabled(true);
+        participant.getRoles().add("PARTICIPANT");
+
+        return userRepository.save(participant);
+    }
+
     public void logout() {
         SecurityContextHolder.clearContext();
     }
@@ -70,4 +121,30 @@ public class AuthService {
         }
         return false;
     }
-} 
+
+    public boolean isUsernameAvailable(String username) {
+        return !userRepository.existsByUsername(username);
+    }
+
+    public boolean isEmailAvailable(String email) {
+        return !userRepository.existsByEmail(email);
+    }
+
+    @Transactional
+    public void changePassword(String username, String oldPassword, String newPassword) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new RuntimeException("Invalid old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateProfile(User user) {
+        userRepository.save(user);
+    }
+}
