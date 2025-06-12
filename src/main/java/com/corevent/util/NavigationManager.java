@@ -9,8 +9,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 
 // Manager for navigating between scenes in the application
+@Slf4j
 @Component
 public class NavigationManager {
   
@@ -87,6 +89,24 @@ public class NavigationManager {
   
   public void navigateToMyEvaluations() throws IOException {
     loadScene("/fxml/my-evaluations.fxml", "Corevent - My Evaluations");
+  }
+  
+  public void navigateToEvaluationForm(String eventId) throws IOException {
+    loadScene("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+  }
+  
+  public Stage openEvaluationForm(String eventId) throws IOException {
+    return openNewWindow("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+  }
+  
+  public void goBack() throws IOException {
+    // Simple implementation - navigate back to dashboard based on current user
+    com.corevent.entity.User currentUser = SessionManager.getInstance().getCurrentUser();
+    if (currentUser != null) {
+      navigateToDashboard(currentUser.getRole());
+    } else {
+      navigateToLogin();
+    }
   }
   
   public void navigateToDashboard(String role) {
