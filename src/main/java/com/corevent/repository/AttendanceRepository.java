@@ -21,7 +21,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, String> 
     List<Attendance> findByEventId(@Param("eventId") String eventId);
     
     @Query("SELECT a FROM Attendance a WHERE a.participant.id = :participantId")
-    List<Attendance> findByParticipantId(@Param("participantId") Long participantId);
+    List<Attendance> findByParticipantId(@Param("participantId") String participantId);
     
     @Query("SELECT COUNT(a) FROM Attendance a WHERE a.event.eventId = :eventId")
     long countByEventId(@Param("eventId") String eventId);
