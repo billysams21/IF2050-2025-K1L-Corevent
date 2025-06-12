@@ -1,13 +1,15 @@
 package com.corevent.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import com.corevent.entity.Event;
 import com.corevent.entity.Participant;
+import com.corevent.entity.Ticket;
+import com.corevent.entity.Ticket.TicketStatus;
 import com.corevent.entity.User;
 import com.corevent.service.EventService;
 import com.corevent.service.TicketService;
@@ -15,6 +17,8 @@ import com.corevent.util.NavigationManager;
 import com.corevent.util.SessionManager;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -24,6 +28,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -42,13 +47,13 @@ public class ParticipantDashboardController {
     @FXML private Button profileButton;
     @FXML private Button refreshButton;
     
-    @FXML private TableView<Event> eventsTable;
-    @FXML private TableColumn<Event, String> eventNameColumn;
-    @FXML private TableColumn<Event, String> dateColumn;
-    @FXML private TableColumn<Event, String> locationColumn;
-    @FXML private TableColumn<Event, String> ticketStatusColumn;
-    @FXML private TableColumn<Event, String> attendanceStatusColumn;
-    @FXML private TableColumn<Event, Void> actionsColumn;
+    @FXML private TableView<Ticket> eventsTable;
+    @FXML private TableColumn<Ticket, String> eventNameColumn;
+    @FXML private TableColumn<Ticket, LocalDateTime> dateColumn;
+    @FXML private TableColumn<Ticket, String> locationColumn;
+    @FXML private TableColumn<Ticket, TicketStatus> ticketStatusColumn;
+    @FXML private TableColumn<Ticket, String> attendanceStatusColumn;
+    @FXML private TableColumn<Ticket, Void> actionsColumn;
     
     @Autowired
     private EventService eventService;
@@ -76,27 +81,49 @@ public class ParticipantDashboardController {
     }
     
     private void setupTableColumns() {
-        eventNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        eventNameColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getEvent().getEventName()));
+        dateColumn.setCellValueFactory(cellData -> 
+            new SimpleObjectProperty<>(cellData.getValue().getEvent().getDate()));
+        locationColumn.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getEvent().getLocation()));
         ticketStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         
-        // TODO: Set up ticket status and attendance status columns
-        // These will need custom cell factories to show the status from tickets and attendance
+        // Set up attendance status column
+        attendanceStatusColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setText(null);
+                    return;
+                }
+                
+                Ticket ticket = getTableRow().getItem();
+                // TODO: Implement attendance status check
+                setText("Not Checked In");
+            }
+        });
         
-        // Set up actions column with View button only
+        // Set up actions column with Download QR buttons
         actionsColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button viewButton = new Button("View");
+            private final Button downloadButton = new Button("Download QR");
             
             {
-                viewButton.getStyleClass().add("button-secondary");
-                viewButton.setOnAction(e -> handleViewEvent(getTableRow().getItem()));
+                downloadButton.getStyleClass().add("button-secondary");
+                downloadButton.setOnAction(e -> handleDownloadQR(getTableRow().getItem()));
             }
             
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : viewButton);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                
+                HBox buttons = new HBox(8, downloadButton);
+                setGraphic(buttons);
             }
         });
     }
@@ -111,18 +138,14 @@ public class ParticipantDashboardController {
                 }
                 
                 Participant participant = (Participant) currentUser;
-                List<Event> participantEvents = eventService.findAll().stream()
-                    .filter(event -> ticketService.findByParticipantId(participant.getUserId())
-                        .stream()
-                        .anyMatch(ticket -> ticket.getEvent().getEventId().equals(event.getEventId())))
-                    .toList();
+                List<Ticket> participantTickets = ticketService.findByParticipantId(participant.getUserId());
                 
-                int registeredEvents = participantEvents.size();
-                int upcomingEvents = (int) participantEvents.stream()
-                    .filter(Event::isAvailable)
+                int registeredEvents = participantTickets.size();
+                int upcomingEvents = (int) participantTickets.stream()
+                    .filter(ticket -> ticket.getEvent().isAvailable())
                     .count();
-                int completedEvents = (int) participantEvents.stream()
-                    .filter(event -> !event.isAvailable())
+                int completedEvents = (int) participantTickets.stream()
+                    .filter(ticket -> !ticket.getEvent().isAvailable())
                     .count();
                 
                 return new DashboardData(registeredEvents, upcomingEvents, completedEvents);
@@ -134,6 +157,14 @@ public class ParticipantDashboardController {
             registeredEventsLabel.setText(String.valueOf(data.registeredEvents()));
             upcomingEventsLabel.setText(String.valueOf(data.upcomingEvents()));
             completedEventsLabel.setText(String.valueOf(data.completedEvents()));
+            
+            // Load tickets into table
+            User currentUser = SessionManager.getInstance().getCurrentUser();
+            if (currentUser instanceof Participant) {
+                Participant participant = (Participant) currentUser;
+                List<Ticket> tickets = ticketService.findByParticipantId(participant.getUserId());
+                eventsTable.getItems().setAll(tickets);
+            }
         });
         
         loadTask.setOnFailed(event -> {
@@ -205,10 +236,10 @@ public class ParticipantDashboardController {
         }
     }
     
-    private void handleViewEvent(Event event) {
-        if (event != null) {
+    private void handleViewEvent(Ticket ticket) {
+        if (ticket != null) {
             try {
-                navigationManager.navigateToEventDetails(event.getEventId());
+                navigationManager.navigateToEventDetails(ticket.getEvent().getEventId());
             } catch (IOException e) {
                 log.error("Failed to navigate to event details", e);
                 showAlert("Error", "Failed to open event details");
@@ -216,21 +247,31 @@ public class ParticipantDashboardController {
         }
     }
     
+    private void handleDownloadQR(Ticket ticket) {
+        if (ticket != null && ticket.getQrCode() != null) {
+            // TODO: Implement QR code download functionality
+            showAlert("Info", "QR code download not implemented yet");
+        }
+    }
+    
     private void showAlert(String title, String content) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle(title);
+            alert.setHeaderText(null);
             alert.setContentText(content);
             alert.showAndWait();
         });
     }
     
     private void showError(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
     
     private record DashboardData(int registeredEvents, int upcomingEvents, int completedEvents) {}

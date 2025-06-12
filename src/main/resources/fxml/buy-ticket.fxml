@@ -4,48 +4,53 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.BuyTicketController" spacing="18" style="-fx-background-color: #f7f9fa; -fx-padding: 32;">
-    <Label text="Buy Ticket" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-    
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.BuyTicketController" spacing="20" style="-fx-background-color: #f7f9fa; -fx-padding: 32;">
+    <HBox alignment="CENTER_LEFT" spacing="18">
+        <Label text="Buy Ticket" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <Button fx:id="cancelButton" text="Cancel" styleClass="button-secondary" onAction="#handleCancel"/>
+    </HBox>
+
+    <!-- Event Details -->
     <VBox spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
-        <Label text="Event Details" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-        <GridPane hgap="16" vgap="12">
-            <Label text="Event Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <Label fx:id="eventNameLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="Event Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <GridPane hgap="12" vgap="12">
+            <Label text="Event Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <Label fx:id="eventNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
             
-            <Label text="Date:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <Label fx:id="eventDateLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Date:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <Label fx:id="eventDateLabel" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
             
-            <Label text="Location:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <Label fx:id="eventLocationLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+            <Label text="Location:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <Label fx:id="eventLocationLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
             
-            <Label text="Price:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <Label fx:id="eventPriceLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+            <Label text="Price:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+            <Label fx:id="eventPriceLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             
-            <Label text="Available Slots:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <Label fx:id="availableSlotsLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+            <Label text="Available Slots:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+            <Label fx:id="availableSlotsLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
         </GridPane>
     </VBox>
-    
-    <VBox spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
-        <Label text="Payment Details" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
-        <GridPane hgap="16" vgap="12">
-            <Label text="Payment Method:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="paymentMethodCombo" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+    <!-- Payment Details -->
+    <VBox fx:id="paymentDetailsBox" spacing="12" style="-fx-background-color: #fff; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
+        <Label text="Payment Details" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+        <GridPane hgap="12" vgap="12">
+            <Label text="Payment Method:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <ComboBox fx:id="paymentMethodCombo" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="200"/>
             
-            <Label text="Transaction Reference:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="transactionRefField" promptText="Enter transaction reference" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label text="Transaction Reference:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="transactionRefField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="200"/>
             
-            <Label text="Payment Proof:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <HBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                <TextField fx:id="paymentProofField" promptText="Upload payment proof" editable="false" HBox.hgrow="ALWAYS"/>
-                <Button fx:id="uploadButton" text="Upload" onAction="#handleUploadProof"/>
+            <Label text="Payment Proof:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <HBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <TextField fx:id="paymentProofField" prefWidth="200" editable="false"/>
+                <Button fx:id="uploadButton" text="Upload" styleClass="button-secondary" onAction="#handleUploadProof"/>
             </HBox>
         </GridPane>
     </VBox>
-    
+
+    <!-- Action Buttons -->
     <HBox spacing="12" alignment="CENTER_RIGHT">
-        <Button fx:id="cancelButton" text="Cancel" styleClass="button-secondary" onAction="#handleCancel"/>
-        <Button fx:id="buyButton" text="Buy Ticket" styleClass="button-primary" onAction="#handleBuyTicket"/>
+        <Button fx:id="buyButton" text="Buy Ticket" styleClass="button-primary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;" onAction="#handleBuyTicket"/>
     </HBox>
 </VBox> 

@@ -5,7 +5,11 @@ import java.io.IOException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.corevent.controller.BuyTicketController;
 import com.corevent.controller.ManageEventController;
+import com.corevent.controller.ParticipantManagementViewController;
+import com.corevent.entity.Event;
+import com.corevent.service.EventService;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,10 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 public class NavigationManager {
   
   private final ApplicationContext springContext;
+  private final EventService eventService;
   private Stage primaryStage;
   
-  public NavigationManager(ApplicationContext springContext) {
+  public NavigationManager(ApplicationContext springContext, EventService eventService) {
     this.springContext = springContext;
+    this.eventService = eventService;
   }
   
   public void setPrimaryStage(Stage primaryStage) {
@@ -58,7 +64,11 @@ public class NavigationManager {
     scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
     
     ManageEventController controller = loader.getController();
-    controller.setEventId(eventId);
+    Event event = eventService.findById(eventId);
+    if (event == null) {
+        throw new IllegalArgumentException("Event not found");
+    }
+    controller.setEvent(event);
     
     primaryStage.setTitle("Corevent - Manage Event");
     primaryStage.setScene(scene);
@@ -86,8 +96,20 @@ public class NavigationManager {
     loadScene("/fxml/edit-event.fxml", "Corevent - Edit Event");
   }
   
-  public void navigateToParticipantManagement() throws IOException {
-    loadScene("/fxml/participant-management.fxml", "Corevent - Participant Management");
+  public void navigateToParticipantManagement(String eventId) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ParticipantManagementView.fxml"));
+    loader.setControllerFactory(springContext::getBean);
+    
+    Parent root = loader.load();
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+    
+    ParticipantManagementViewController controller = loader.getController();
+    controller.setEventId(eventId);
+    
+    primaryStage.setTitle("Corevent - Participant Management");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public void navigateToCheckIn() throws IOException {
@@ -108,6 +130,27 @@ public class NavigationManager {
   
   public void navigateToMyEvaluations() throws IOException {
     loadScene("/fxml/my-evaluations.fxml", "Corevent - My Evaluations");
+  }
+  
+  public void navigateToBuyTicket(String eventId) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/buy-ticket.fxml"));
+    loader.setControllerFactory(springContext::getBean);
+    
+    Parent root = loader.load();
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+    
+    // Get the controller and set the event
+    BuyTicketController controller = loader.getController();
+    Event event = eventService.findById(eventId);
+    if (event == null) {
+        throw new IllegalArgumentException("Event not found");
+    }
+    controller.setEvent(event);
+    
+    primaryStage.setTitle("Corevent - Buy Ticket");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public void navigateToDashboard(String role) {

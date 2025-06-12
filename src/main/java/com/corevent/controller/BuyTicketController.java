@@ -14,10 +14,12 @@ import com.corevent.entity.Event;
 import com.corevent.entity.Participant;
 import com.corevent.entity.Payment;
 import com.corevent.entity.Ticket;
+import com.corevent.entity.User;
 import com.corevent.repository.EventRepository;
 import com.corevent.repository.PaymentRepository;
 import com.corevent.repository.TicketRepository;
 import com.corevent.util.NavigationManager;
+import com.corevent.util.SessionManager;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -25,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 @Controller
@@ -41,6 +44,7 @@ public class BuyTicketController {
     @FXML private Button uploadButton;
     @FXML private Button buyButton;
     @FXML private Button cancelButton;
+    @FXML private VBox paymentDetailsBox;
 
     @Autowired private EventRepository eventRepository;
     @Autowired private PaymentRepository paymentRepository;
@@ -56,6 +60,19 @@ public class BuyTicketController {
         // Initialize payment method combo box
         paymentMethodCombo.getItems().addAll(Payment.PaymentMethod.values());
         paymentMethodCombo.setValue(Payment.PaymentMethod.BANK_TRANSFER);
+
+        // Get current participant from session
+        User currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser instanceof Participant) {
+            this.participant = (Participant) currentUser;
+        } else {
+            showError("You must be logged in as a participant to buy tickets");
+            try {
+                navigationManager.navigateToParticipantDashboard();
+            } catch (IOException e) {
+                showError("Failed to navigate back to dashboard");
+            }
+        }
     }
 
     public void setEvent(Event event) {
@@ -74,6 +91,14 @@ public class BuyTicketController {
             eventLocationLabel.setText(event.getLocation());
             eventPriceLabel.setText(String.format("Rp %.2f", event.getTicketPrice()));
             availableSlotsLabel.setText(String.valueOf(event.getQuota() - event.getCurrentParticipants()));
+
+            // Show/hide payment details based on event price
+            boolean isFreeEvent = event.getTicketPrice() == 0;
+            paymentDetailsBox.setVisible(!isFreeEvent);
+            paymentDetailsBox.setManaged(!isFreeEvent);
+            
+            // Update buy button text
+            buyButton.setText(isFreeEvent ? "Get Free Ticket" : "Buy Ticket");
         }
     }
 
@@ -100,33 +125,37 @@ public class BuyTicketController {
         }
 
         try {
-            // Create payment
-            Payment payment = new Payment();
-            payment.setParticipant(participant);
-            payment.setEvent(event);
-            payment.setAmount(event.getTicketPrice());
-            payment.setPaymentMethod(paymentMethodCombo.getValue());
-            payment.setTransactionReference(transactionRefField.getText());
-            payment.setTimestamp(LocalDateTime.now());
-            payment.setStatus(Payment.PaymentStatus.WAITING);
+            Payment payment = null;
+            
+            // Only create payment for paid events
+            if (event.getTicketPrice() > 0) {
+                payment = new Payment();
+                payment.setParticipant(participant);
+                payment.setEvent(event);
+                payment.setAmount(event.getTicketPrice());
+                payment.setPaymentMethod(paymentMethodCombo.getValue());
+                payment.setTransactionReference(transactionRefField.getText());
+                payment.setTimestamp(LocalDateTime.now());
+                payment.setStatus(Payment.PaymentStatus.WAITING);
 
-            // Save payment proof
-            if (paymentProofFile != null) {
-                String proofPath = savePaymentProof(paymentProofFile);
-                if (proofPath == null) {
-                    showError("Failed to save payment proof.");
-                    return;
+                // Save payment proof
+                if (paymentProofFile != null) {
+                    String proofPath = savePaymentProof(paymentProofFile);
+                    if (proofPath == null) {
+                        showError("Failed to save payment proof.");
+                        return;
+                    }
+                    payment.setPaymentProof(proofPath);
                 }
-                payment.setPaymentProof(proofPath);
-            }
 
-            payment = paymentRepository.save(payment);
+                payment = paymentRepository.save(payment);
+            }
 
             // Create ticket
             Ticket ticket = new Ticket();
             ticket.setEvent(event);
             ticket.setParticipant(participant);
-            ticket.setPayment(payment);
+            ticket.setPayment(payment); // Will be null for free events
             ticket.setStatus(Ticket.TicketStatus.ACTIVE);
             ticket.generateQRCode();
 
@@ -136,22 +165,27 @@ public class BuyTicketController {
             event.incrementParticipants();
             eventRepository.save(event);
 
-            showSuccess("Ticket purchased successfully!");
+            showSuccess("Ticket " + (event.getTicketPrice() > 0 ? "purchased" : "reserved") + " successfully!");
             navigationManager.navigateToParticipantDashboard();
 
         } catch (Exception e) {
-            showError("Failed to purchase ticket: " + e.getMessage());
+            showError("Failed to " + (event.getTicketPrice() > 0 ? "purchase" : "reserve") + " ticket: " + e.getMessage());
         }
     }
 
     private boolean validateInputs() {
+        // Skip payment validation for free events
+        if (event.getTicketPrice() == 0) {
+            return true;
+        }
+
         if (paymentMethodCombo.getValue() == null) {
             showError("Please select a payment method");
             return false;
         }
 
         if (transactionRefField.getText().trim().isEmpty()) {
-            showError("Please enter transaction reference");
+            showError("Please enter transaction data");
             return false;
         }
 
