@@ -13,6 +13,8 @@
     </padding>
     
     <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="← Back" onAction="#handleBack" styleClass="button-secondary"/>
+        <Region HBox.hgrow="ALWAYS"/>
         <Label text="Event Participants" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
         <Region HBox.hgrow="ALWAYS"/>
         <ComboBox fx:id="statusFilter" promptText="Filter by Status"/>

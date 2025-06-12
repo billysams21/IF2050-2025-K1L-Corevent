@@ -39,7 +39,7 @@
         <Button fx:id="createEventButton" text="Create Event" styleClass="button-primary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
         <Button fx:id="manageParticipantsButton" text="Participants" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
         <Button fx:id="manageAttendanceButton" text="Attendance" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
-        <Button fx:id="viewEvaluationsButton" text="Lihat Evaluasi" onAction="#handleViewEvaluations" styleClass="button-secondary"/>
+        <Button fx:id="viewEvaluationsButton" text="View Evaluations" onAction="#handleViewEvaluations" styleClass="button-secondary"/>
         <Button fx:id="profileButton" text="Profile" styleClass="button-secondary" style="-fx-font-size: 15px; -fx-background-radius: 8; -fx-padding: 8 24;"/>
     </HBox>
 </VBox>

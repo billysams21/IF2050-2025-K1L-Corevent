@@ -13,37 +13,41 @@
 
     <!-- Header -->
     <VBox spacing="10" styleClass="results-header">
-        <Label text="Hasil Evaluasi Event" styleClass="form-title"/>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Button text="← Back" onAction="#handleBack" styleClass="button-secondary"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Event Evaluation Results" styleClass="form-title"/>
+        </HBox>
         <Separator/>
     </VBox>
 
     <!-- Event Selection -->
     <HBox spacing="15" alignment="CENTER_LEFT" styleClass="event-selection">
-        <Label text="Pilih Acara:" styleClass="section-title" minWidth="100"/>
-        <ComboBox fx:id="eventComboBox" prefWidth="300" promptText="Pilih event untuk melihat evaluasi..."/>
+        <Label text="Select Event:" styleClass="section-title" minWidth="100"/>
+        <ComboBox fx:id="eventComboBox" prefWidth="300" promptText="Select an event to view evaluations..."/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Unduh Laporan Lengkap" styleClass="button-secondary" prefWidth="180"/>
+        <Button fx:id="downloadReportButton" text="Download Full Report" styleClass="button-secondary" prefWidth="180"/>
     </HBox>
 
     <!-- Statistics Cards -->
     <HBox spacing="20" styleClass="statistics-cards">
         <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
-            <Label text="Rata-rata Rating" styleClass="stat-label"/>
+            <Label text="Average Rating" styleClass="stat-label"/>
             <Label fx:id="averageScoreLabel" text="0.0 ⭐" styleClass="stat-value-large"/>
         </VBox>
         
         <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
-            <Label text="Total Evaluasi" styleClass="stat-label"/>
+            <Label text="Total Evaluations" styleClass="stat-label"/>
             <Label fx:id="totalEvaluationsLabel" text="0" styleClass="stat-value-large"/>
         </VBox>
         
         <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
-            <Label text="Rating Terendah" styleClass="stat-label"/>
+            <Label text="Lowest Rating" styleClass="stat-label"/>
             <Label fx:id="minScoreLabel" text="0" styleClass="stat-value"/>
         </VBox>
         
         <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" alignment="CENTER">
-            <Label text="Rating Tertinggi" styleClass="stat-label"/>
+            <Label text="Highest Rating" styleClass="stat-label"/>
             <Label fx:id="maxScoreLabel" text="0" styleClass="stat-value"/>
         </VBox>
     </HBox>
@@ -51,28 +55,26 @@
     <!-- Evaluations Table -->
     <VBox spacing="15" VBox.vgrow="ALWAYS" styleClass="table-section">
         <HBox alignment="CENTER_LEFT" spacing="10">
-            <Label text="Daftar Evaluasi" styleClass="section-title"/>
+            <Label text="Evaluation List" styleClass="section-title"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Refresh" styleClass="button-secondary" prefWidth="100"/>
+            <Button fx:id="refreshButton" text="Refresh" styleClass="button-secondary" prefWidth="100"/>
         </HBox>
 
         <TableView fx:id="evaluationsTable" VBox.vgrow="ALWAYS" styleClass="evaluations-table">
             <columns>
-                <TableColumn fx:id="participantNameColumn" text="Nama Peserta" prefWidth="200" resizable="true"/>
+                <TableColumn fx:id="participantNameColumn" text="Participant Name" prefWidth="200" resizable="true"/>
                 <TableColumn fx:id="scoreColumn" text="Rating" prefWidth="100" resizable="false"/>
-                <TableColumn fx:id="feedbackColumn" text="Komentar" prefWidth="300" resizable="true"/>
-                <TableColumn fx:id="submittedAtColumn" text="Waktu Submit" prefWidth="150" resizable="true"/>
+                <TableColumn fx:id="feedbackColumn" text="Comment" prefWidth="300" resizable="true"/>
+                <TableColumn fx:id="submittedAtColumn" text="Submitted At" prefWidth="150" resizable="true"/>
             </columns>
             <placeholder>
-                <Label text="Pilih event untuk melihat evaluasi" styleClass="table-placeholder"/>
+                <Label text="Select an event to view evaluations" styleClass="table-placeholder"/>
             </placeholder>
         </TableView>
     </VBox>
 
     <!-- Action Buttons -->
     <HBox spacing="15" styleClass="action-buttons" alignment="CENTER_RIGHT">
-        <Button text="Buat Form Evaluasi Custom" styleClass="button-secondary" prefWidth="200"/>
-        <Button text="Ekspor Data" styleClass="button-primary" prefWidth="120"/>
-        <Button text="Tutup" onAction="#handleCancel" styleClass="button-secondary" prefWidth="100"/>
+        <Button fx:id="exportButton" text="Export Data" styleClass="button-primary" prefWidth="120"/>
     </HBox>
-</VBox> 
+</VBox>
