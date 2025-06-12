@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.ManageEventController" spacing="18" style="-fx-background-color: #f7f9fa; -fx-padding: 32;">
+    <Label text="Manage Event" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+    <GridPane hgap="16" vgap="12">
+        <Label text="Event Name:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="eventNameField" promptText="Event Name" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        
+        <Label text="Date:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="datePicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        
+        <Label text="Time:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="timeField" promptText="HH:mm" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        
+        <Label text="Location:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="locationField" promptText="Location" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        
+        <Label text="Quota:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="quotaField" promptText="Quota" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        
+        <Label text="Type:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="eventTypeCombo" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        
+        <Label text="Ticket Price:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="ticketPriceField" promptText="0.0" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        
+        <Label text="Terms &amp; Conditions:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextArea fx:id="termsField" promptText="Terms and Conditions" GridPane.rowIndex="7" GridPane.columnIndex="1" prefRowCount="2"/>
+        
+        <Label text="Description:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <TextArea fx:id="descriptionField" promptText="Description" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="2"/>
+    </GridPane>
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button fx:id="saveButton" text="Save Changes" styleClass="button-primary" onAction="#handleSave"/>
+        <Button fx:id="cancelButton" text="Cancel" styleClass="button-secondary" onAction="#handleCancel"/>
+    </HBox>
+</VBox> 
