@@ -1,6 +1,7 @@
 package com.corevent.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.corevent.entity.ParticipantInfo;
 import com.corevent.entity.Ticket.TicketStatus;
 import com.corevent.service.ExportService;
 import com.corevent.service.ParticipantManagementService;
+import com.corevent.util.NavigationManager;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -53,6 +55,7 @@ public class ParticipantManagementViewController {
     
     private final ParticipantManagementService participantManagementService;
     private final ExportService exportService;
+    private final NavigationManager navigationManager;
     
     private String currentEventId;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -209,6 +212,15 @@ public class ParticipantManagementViewController {
             alert.setHeaderText(null);
             alert.setContentText("Failed to export participants data: " + e.getMessage());
             alert.showAndWait();
+        }
+    }
+    
+    @FXML
+    private void handleBack() {
+        try {
+            navigationManager.goBack();
+        } catch (IOException e) {
+            log.error("Failed to navigate back to manage event", e);
         }
     }
 } 

@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.corevent.controller.BuyTicketController;
+import com.corevent.controller.EvaluationController;
 import com.corevent.controller.ManageEventController;
 import com.corevent.controller.ParticipantManagementViewController;
 import com.corevent.entity.Event;
@@ -117,7 +118,20 @@ public class NavigationManager {
   }
   
   public void navigateToEvaluationResults() throws IOException {
-    loadScene("/fxml/evaluation-results.fxml", "Corevent - Evaluation Results");
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/evaluation-results.fxml"));
+    loader.setControllerFactory(springContext::getBean);
+    
+    Parent root = loader.load();
+    Scene scene = new Scene(root);
+    scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
+    
+    // Get the controller and initialize it
+    EvaluationController controller = loader.getController();
+    controller.initializeForResults();
+    
+    primaryStage.setTitle("Corevent - Evaluation Results");
+    primaryStage.setScene(scene);
+    primaryStage.show();
   }
   
   public void navigateToBrowseEvents() throws IOException {
@@ -154,15 +168,14 @@ public class NavigationManager {
   }
   
   public void navigateToEvaluationForm(String eventId) throws IOException {
-    loadScene("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+    loadScene("/fxml/evaluation-form.fxml", "Corevent - Event Evaluation");
   }
   
   public Stage openEvaluationForm(String eventId) throws IOException {
-    return openNewWindow("/fxml/evaluation-form.fxml", "Corevent - Evaluasi Event");
+    return openNewWindow("/fxml/evaluation-form.fxml", "Corevent - Event Evaluation");
   }
   
   public void goBack() throws IOException {
-    // Simple implementation - navigate back to dashboard based on current user
     com.corevent.entity.User currentUser = SessionManager.getInstance().getCurrentUser();
     if (currentUser != null) {
       navigateToDashboard(currentUser.getRole());

@@ -1,13 +1,14 @@
 package com.corevent.repository;
 
-import com.corevent.entity.Evaluation;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.corevent.entity.Evaluation;
 
 @Repository
 public interface EvaluationRepository extends JpaRepository<Evaluation, String> {
@@ -59,10 +60,10 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, String> 
      * Get evaluation statistics for an event
      */
     @Query("SELECT " +
-           "AVG(e.score) as averageScore, " +
+           "COALESCE(AVG(CAST(e.score AS double)), 0.0) as averageScore, " +
            "COUNT(e) as totalEvaluations, " +
-           "MIN(e.score) as minScore, " +
-           "MAX(e.score) as maxScore " +
+           "COALESCE(MIN(e.score), 0) as minScore, " +
+           "COALESCE(MAX(e.score), 0) as maxScore " +
            "FROM Evaluation e WHERE e.event.eventId = :eventId")
-    Object[] getEvaluationStatistics(@Param("eventId") String eventId);
+    List<Object[]> getEvaluationStatistics(@Param("eventId") String eventId);
 } 

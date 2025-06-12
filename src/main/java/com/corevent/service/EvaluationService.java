@@ -1,5 +1,12 @@
 package com.corevent.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.corevent.dto.EvaluationData;
 import com.corevent.dto.SubmitResult;
 import com.corevent.entity.Evaluation;
@@ -8,13 +15,8 @@ import com.corevent.entity.Participant;
 import com.corevent.repository.EvaluationRepository;
 import com.corevent.repository.EventRepository;
 import com.corevent.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -34,34 +36,34 @@ public class EvaluationService {
     }
     
     /**
-     * Submit evaluation following DPPL algorithm (halaman 31-32)
+     * Submit evaluation following DPPL algorithm (page 31-32)
      */
     public SubmitResult submitEvaluation(EvaluationData data) {
         try {
-            // 1. Validasi Input
+            // 1. Input Validation
             if (data.getEventId() == null || data.getEventId().isEmpty()) {
-                return SubmitResult.failure("Event ID tidak boleh kosong");
+                return SubmitResult.failure("Event ID cannot be empty");
             }
             
             if (data.getParticipantId() == null) {
-                return SubmitResult.failure("Participant ID tidak boleh kosong");
+                return SubmitResult.failure("Participant ID cannot be empty");
             }
             
             if (data.getScore() == null || data.getScore() < 1 || data.getScore() > 5) {
-                return SubmitResult.failure("Score harus antara 1-5");
+                return SubmitResult.failure("Score must be between 1-5");
             }
             
-            // 2. Validasi Business Logic
+            // 2. Business Logic Validation
             Optional<Event> eventOpt = eventRepository.findById(data.getEventId());
             if (eventOpt.isEmpty()) {
-                return SubmitResult.failure("Event tidak ditemukan");
+                return SubmitResult.failure("Event not found");
             }
             
             Event event = eventOpt.get();
             
             // Check if event is completed
             if (!isEventCompleted(event)) {
-                return SubmitResult.failure("Event belum selesai, evaluasi belum dapat diisi");
+                return SubmitResult.failure("Event not yet completed, evaluation cannot be submitted");
             }
             
             // Check if participant exists and is registered for the event
@@ -70,19 +72,19 @@ public class EvaluationService {
                     .map(user -> (Participant) user);
                     
             if (participantOpt.isEmpty()) {
-                return SubmitResult.failure("Participant tidak ditemukan");
+                return SubmitResult.failure("Participant not found");
             }
             
             Participant participant = participantOpt.get();
             
             // Check if participant is registered for the event
             if (!isParticipantRegistered(participant, event)) {
-                return SubmitResult.failure("Peserta tidak terdaftar dalam event ini");
+                return SubmitResult.failure("Participant is not registered for this event");
             }
             
             // Check if evaluation already submitted
             if (hasSubmittedEvaluation(data.getParticipantId(), data.getEventId())) {
-                return SubmitResult.failure("Evaluasi sudah pernah disubmit sebelumnya");
+                return SubmitResult.failure("Evaluation has already been submitted previously");
             }
             
             // 3. Create and save evaluation
@@ -100,7 +102,7 @@ public class EvaluationService {
             
         } catch (Exception e) {
             log.error("Error submitting evaluation", e);
-            return SubmitResult.failure("Terjadi kesalahan saat menyimpan evaluasi: " + e.getMessage());
+            return SubmitResult.failure("An error occurred while saving evaluation: " + e.getMessage());
         }
     }
     
@@ -150,19 +152,26 @@ public class EvaluationService {
      */
     @Transactional(readOnly = true)
     public EvaluationStatistics getEvaluationStatistics(String eventId) {
-        Object[] stats = evaluationRepository.getEvaluationStatistics(eventId);
-        if (stats == null || stats.length == 0) {
+        List<Object[]> results = evaluationRepository.getEvaluationStatistics(eventId);
+    
+        if (results == null || results.isEmpty()) {
             return new EvaluationStatistics(0.0, 0L, 0, 0);
         }
         
-        Double averageScore = stats[0] != null ? (Double) stats[0] : 0.0;
-        Long totalEvaluations = stats[1] != null ? (Long) stats[1] : 0L;
-        Integer minScore = stats[2] != null ? (Integer) stats[2] : 0;
-        Integer maxScore = stats[3] != null ? (Integer) stats[3] : 0;
+        Object[] stats = results.get(0);
+        
+        if (stats == null || stats.length == 0 || stats[0] == null) {
+            return new EvaluationStatistics(0.0, 0L, 0, 0);
+        }
+        
+        Double averageScore = ((Number) stats[0]).doubleValue();
+        Long totalEvaluations = ((Number) stats[1]).longValue();
+        Integer minScore = ((Number) stats[2]).intValue();
+        Integer maxScore = ((Number) stats[3]).intValue();
         
         return new EvaluationStatistics(averageScore, totalEvaluations, minScore, maxScore);
     }
-    
+
     /**
      * Get events with average evaluation scores for committee (Q-010)
      */
@@ -192,4 +201,4 @@ public class EvaluationService {
             Integer minScore,
             Integer maxScore
     ) {}
-} 
+}
