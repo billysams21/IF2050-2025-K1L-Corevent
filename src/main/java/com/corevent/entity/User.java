@@ -45,7 +45,7 @@ public abstract class User {
   
   @Column(name = "account_status")
   @Enumerated(EnumType.STRING)
-  private AccountStatus status = AccountStatus.ACTIVE;
+  private AccountStatus status;
   
   @Column(nullable = false)
   private boolean enabled = true;
@@ -53,7 +53,10 @@ public abstract class User {
   @Column(name = "last_login")
   private LocalDateTime lastLogin;
   
+  @Column(name = "remember_me_token")
   private String rememberMeToken;
+  
+  @Column(name = "remember_me_expiry")
   private LocalDateTime rememberMeExpiry;
   
   @ElementCollection(fetch = FetchType.EAGER)
@@ -64,10 +67,10 @@ public abstract class User {
   @Column(name = "created_at")
   private LocalDateTime createdAt;
   
-  @Column(nullable = false)
+  @Column(name = "full_name", nullable = true)
   private String fullName;
   
-  @Column(nullable = false)
+  @Column(name = "phone_number", nullable = true)
   private String phoneNumber;
   
   @PrePersist
@@ -119,6 +122,38 @@ public abstract class User {
   
   public String getPhoneNumber() { return phoneNumber; }
   public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+  public LocalDateTime getLastLogin() {
+    return lastLogin;
+  }
+
+  public void setLastLogin(LocalDateTime lastLogin) {
+    this.lastLogin = lastLogin;
+  }
+
+  public String getRememberMeToken() {
+    return rememberMeToken;
+  }
+
+  public void setRememberMeToken(String rememberMeToken) {
+    this.rememberMeToken = rememberMeToken;
+  }
+
+  public LocalDateTime getRememberMeExpiry() {
+    return rememberMeExpiry;
+  }
+
+  public void setRememberMeExpiry(LocalDateTime rememberMeExpiry) {
+    this.rememberMeExpiry = rememberMeExpiry;
+  }
+
+  public AccountStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(AccountStatus status) {
+    this.status = status;
+  }
 
   public enum UserRole {
     COMMITTEE,

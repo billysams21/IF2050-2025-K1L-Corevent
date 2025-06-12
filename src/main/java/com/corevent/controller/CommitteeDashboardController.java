@@ -163,11 +163,16 @@ public class CommitteeDashboardController {
     
     @FXML
     private void handleProfile() {
+        navigationManager.navigateToProfile();
+    }
+    
+    @FXML
+    private void handleMyProfile() {
         try {
             navigationManager.navigateToProfile();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Failed to navigate to profile", e);
-            showAlert("Error", "Failed to open profile page");
+            showError("Error", "Error loading profile page");
         }
     }
     

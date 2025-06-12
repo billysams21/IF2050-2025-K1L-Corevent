@@ -9,8 +9,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 
 // Manager for navigating between scenes in the application
+@Slf4j
 @Component
 public class NavigationManager {
   
@@ -53,8 +55,13 @@ public class NavigationManager {
     loadScene("/fxml/manage-attendance.fxml", "Corevent - Manage Attendance");
   }
   
-  public void navigateToProfile() throws IOException {
-    loadScene("/fxml/profile.fxml", "Corevent - Profile");
+  public void navigateToProfile() {
+    try {
+        loadScene("/fxml/profile.fxml", "My Profile");
+    } catch (Exception e) {
+        log.error("Failed to navigate to profile", e);
+        throw new RuntimeException("Error loading profile page", e);
+    }
   }
   
   public void navigateToEventDetails(String eventId) throws IOException {

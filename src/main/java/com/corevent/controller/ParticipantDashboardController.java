@@ -3,6 +3,7 @@ package com.corevent.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.corevent.entity.Event;
@@ -49,17 +50,14 @@ public class ParticipantDashboardController {
     @FXML private TableColumn<Event, String> attendanceStatusColumn;
     @FXML private TableColumn<Event, Void> actionsColumn;
     
-    private final NavigationManager navigationManager;
-    private final EventService eventService;
-    private final TicketService ticketService;
+    @Autowired
+    private EventService eventService;
     
-    public ParticipantDashboardController(NavigationManager navigationManager, 
-                                        EventService eventService,
-                                        TicketService ticketService) {
-        this.navigationManager = navigationManager;
-        this.eventService = eventService;
-        this.ticketService = ticketService;
-    }
+    @Autowired
+    private NavigationManager navigationManager;
+    
+    @Autowired
+    private TicketService ticketService;
     
     @FXML
     public void initialize() {
@@ -78,9 +76,10 @@ public class ParticipantDashboardController {
     }
     
     private void setupTableColumns() {
-        eventNameColumn.setCellValueFactory(new PropertyValueFactory<>("eventName"));
+        eventNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        ticketStatusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
         
         // TODO: Set up ticket status and attendance status columns
         // These will need custom cell factories to show the status from tickets and attendance
@@ -177,12 +176,7 @@ public class ParticipantDashboardController {
     
     @FXML
     private void handleProfile() {
-        try {
-            navigationManager.navigateToProfile();
-        } catch (IOException e) {
-            log.error("Failed to navigate to profile", e);
-            showAlert("Error", "Failed to open profile");
-        }
+        navigationManager.navigateToProfile();
     }
     
     @FXML
@@ -199,6 +193,16 @@ public class ParticipantDashboardController {
     @FXML
     private void handleRefresh() {
         loadDashboardData();
+    }
+    
+    @FXML
+    private void handleMyProfile() {
+        try {
+            navigationManager.navigateToProfile();
+        } catch (Exception e) {
+            log.error("Failed to navigate to profile", e);
+            showError("Error", "Error loading profile page");
+        }
     }
     
     private void handleViewEvent(Event event) {
@@ -219,6 +223,14 @@ public class ParticipantDashboardController {
             alert.setContentText(content);
             alert.showAndWait();
         });
+    }
+    
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
     
     private record DashboardData(int registeredEvents, int upcomingEvents, int completedEvents) {}
