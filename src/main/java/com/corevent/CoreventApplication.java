@@ -58,7 +58,7 @@ public class CoreventApplication extends Application {
             
             // Set application icon
             try {
-                primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
+                primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/img/icon.png")));
             } catch (Exception e) {
                 System.err.println("Warning: Could not load application icon: " + e.getMessage());
             }
