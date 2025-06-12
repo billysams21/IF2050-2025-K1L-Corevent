@@ -91,6 +91,10 @@ public class SessionManager {
   public LocalDateTime getLoginTime() { return loginTime; }
   public boolean isRememberMe() { return rememberMe; }
   
+  public void setCurrentUser(User user) {
+    this.currentUser = user;
+  }
+  
   public static class SavedSession {
     public final String username;
     public final String token;

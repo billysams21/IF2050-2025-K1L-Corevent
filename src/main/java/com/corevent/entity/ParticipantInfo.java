@@ -102,4 +102,12 @@ public class ParticipantInfo {
   public void setPaymentStatus(String paymentStatus) {
     this.paymentStatus = paymentStatus;
   }
+
+  public Double getAmountPaid() {
+    return amountPaid;
+  }
+
+  public void setAmountPaid(Double amountPaid) {
+    this.amountPaid = amountPaid;
+  }
 }

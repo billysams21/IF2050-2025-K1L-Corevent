@@ -358,6 +358,26 @@
   -fx-text-fill: #c62828;
 }
 
+.custom-alert {
+    -fx-font-size: 15px;
+    -fx-background-color: #f8ffff;
+    -fx-background-radius: 10;
+    background-color: #ffffff;
+}
+.custom-alert .label {
+    -fx-text-fill: #d35400;
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+.custom-alert .button {
+    -fx-background-color: #e74c3c;
+    background-color: #e74c3c;
+    -fx-text-fill: white;
+    color: white;
+    -fx-background-radius: 8;
+    border-radius: 8px;
+}
+
 /* Evaluation Form Styles */
 .evaluation-form-container {
   -fx-background-color: white;

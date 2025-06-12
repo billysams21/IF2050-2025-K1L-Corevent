@@ -102,19 +102,15 @@ public class LoginController {
     
     private void handleLoginResponse(LoginResponse response) {
         loadingIndicator.setVisible(false);
-        
         if (response.isSuccess()) {
-            // Save credentials if remember me is checked
             if (rememberMeCheckbox.isSelected()) {
                 PreferencesManager.saveCredentials(usernameField.getText());
             } else {
                 PreferencesManager.clearCredentials();
             }
-            
-            // Navigate to appropriate dashboard
             navigateToDashboard(response.getUser().getRole());
         } else {
-            showError(response.getMessage());
+            ProfileController.showErrorPopup("Login Failed", response.getMessage() != null ? response.getMessage() : "Invalid username or password");
             setFormDisabled(false);
         }
     }
@@ -155,5 +151,6 @@ public class LoginController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+        ProfileController.showErrorPopup("Login Error", message);
     }
 }

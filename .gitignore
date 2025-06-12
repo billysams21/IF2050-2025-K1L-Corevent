@@ -130,3 +130,4 @@ dist
 .pnp.*
 /target
 *.db
+/uploads/payment_proofs

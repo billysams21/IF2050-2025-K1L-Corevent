@@ -4,14 +4,27 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.ProfileController" spacing="10" padding="20">
-    <Label text="My Profile" styleClass="header-label"/>
-    <TextField fx:id="nameField" promptText="Full Name" />
-    <TextField fx:id="emailField" promptText="Email" />
-    <TextField fx:id="phoneField" promptText="Phone Number" />
-    <HBox spacing="10">
-        <Button text="Save" onAction="#handleSave" styleClass="button-primary"/>
-        <Button text="Cancel" onAction="#handleCancel" styleClass="button-secondary"/>
-    </HBox>
-</VBox> 
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="com.corevent.controller.ProfileController" spacing="28" style="-fx-background-color: #f7f9fa; -fx-padding: 32;">
+    <VBox spacing="0" style="-fx-background-color: #fff; -fx-background-radius: 14; -fx-padding: 32 48; -fx-effect: dropshadow(gaussian, #d0d7de, 8, 0, 0, 2);">
+        <Label text="My Profile" styleClass="header-label" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 24 0;"/>
+        <VBox spacing="16">
+            <Label text="Username" styleClass="profile-label" style="-fx-font-size: 15px; -fx-text-fill: #555;"/>
+            <TextField fx:id="usernameField" promptText="Username" styleClass="profile-field" style="-fx-background-radius: 8; -fx-padding: 10;" editable="false"/>
+            <Label text="Full Name" styleClass="profile-label" style="-fx-font-size: 15px; -fx-text-fill: #555;"/>
+            <TextField fx:id="nameField" promptText="Full Name" styleClass="profile-field" style="-fx-background-radius: 8; -fx-padding: 10;" editable="false"/>
+            <Label text="Email" styleClass="profile-label" style="-fx-font-size: 15px; -fx-text-fill: #555;"/>
+            <TextField fx:id="emailField" promptText="Email" styleClass="profile-field" style="-fx-background-radius: 8; -fx-padding: 10;" editable="false"/>
+            <Label text="Phone Number" styleClass="profile-label" style="-fx-font-size: 15px; -fx-text-fill: #555;"/>
+            <TextField fx:id="phoneField" promptText="Phone Number" styleClass="profile-field" style="-fx-background-radius: 8; -fx-padding: 10;" editable="false"/>
+        </VBox>
+        <HBox spacing="16" alignment="CENTER_RIGHT" style="-fx-padding: 28 0 0 0;">
+            <Button fx:id="backButton" text="Back" onAction="#handleBack" styleClass="button-secondary" style="-fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 10 28;"/>
+            <Button fx:id="editButton" text="Edit" onAction="#handleEdit" styleClass="button-primary" style="-fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 10 28;"/>
+            <Button fx:id="saveButton" text="Save" onAction="#handleSave" styleClass="button-primary" style="-fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 10 28;" visible="false"/>
+            <Button fx:id="cancelButton" text="Cancel" onAction="#handleCancel" styleClass="button-secondary" style="-fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 10 28;" visible="false"/>
+            <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" styleClass="button-danger" style="-fx-font-size: 16px; -fx-background-radius: 8; -fx-padding: 10 28;"/>
+        </HBox>
+    </VBox>
+</VBox>

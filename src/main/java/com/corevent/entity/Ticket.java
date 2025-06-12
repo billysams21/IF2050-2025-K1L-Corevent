@@ -28,6 +28,10 @@ public class Ticket {
     @JoinColumn(name = "participant_id", nullable = false)
     private Participant participant;
     
+    @ManyToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
+    
     @Column(unique = true)
     private String qrCode;
     
@@ -39,10 +43,11 @@ public class Ticket {
     private LocalDateTime usedDate;
     
     // Business Logic
-    public void generateQR() {
+    public void generateQRCode() {
         // Generate unique QR code
         this.qrCode = "COREVENT-" + event.getEventId() + "-" + 
                       participant.getUserId() + "-" + System.currentTimeMillis();
+        this.purchaseDate = LocalDateTime.now();
     }
     
     public boolean validate() {
@@ -76,6 +81,9 @@ public class Ticket {
     
     public LocalDateTime getPurchaseDate() { return purchaseDate; }
     public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
+    
+    public Payment getPayment() { return payment; }
+    public void setPayment(Payment payment) { this.payment = payment; }
     
     // Enum for Ticket Status
     public enum TicketStatus {

@@ -42,7 +42,7 @@ public class AuthService {
                 User user = (User) authentication.getPrincipal();
                 
                 if (user.getStatus() != User.AccountStatus.ACTIVE) {
-                    return new LoginResponse(false, "Account is not active", null, null, null, 0);
+                    return new LoginResponse(false, "Account is not active", null, null);
                 }
                 
                 String token = jwtTokenUtil.generateToken(user);
@@ -50,12 +50,10 @@ public class AuthService {
                 
                 handleSuccessfulLogin(user, token, rememberMe);
                 
-                return new LoginResponse(true, "Login successful", 
-                    user, token, refreshToken, jwtTokenUtil.getExpirationTime());
-                
+                return new LoginResponse(true, "Login successful", user, token);
             } catch (Exception e) {
                 log.error("Authentication failed", e);
-                return new LoginResponse(false, "Invalid username or password", null, null, null, 0);
+                return new LoginResponse(false, "Invalid credentials", null, null);
             }
         });
     }
@@ -198,5 +196,13 @@ public class AuthService {
     @Transactional
     public void updateProfile(User user) {
         userRepository.save(user);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
+    public void setCurrentUser(User user) {
+        SessionManager.getInstance().setCurrentUser(user);
     }
 }

@@ -82,16 +82,25 @@ public class RegisterController {
         if (username.isEmpty() || fullName.isEmpty() || email.isEmpty() ||
                 password.isEmpty() || confirmPassword.isEmpty()) {
             showError("Please fill in all fields");
+            ProfileController.showErrorPopup("Register Error", "Please fill in all fields");
             return;
         }
 
         if (!password.equals(confirmPassword)) {
             showError("Passwords do not match");
+            ProfileController.showErrorPopup("Register Error", "Passwords do not match");
+            return;
+        }
+
+        if (password.length() < 8) {
+            showError("Password must be at least 8 characters");
+            ProfileController.showErrorPopup("Register Error", "Password must be at least 8 characters");
             return;
         }
 
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             showError("Invalid email format");
+            ProfileController.showErrorPopup("Register Error", "Invalid email format");
             return;
         }
 
@@ -114,13 +123,11 @@ public class RegisterController {
                     participant.setFullName(fullName);
                     user = participant;
                 }
-
                 user.setUsername(username);
                 user.setEmail(email);
                 user.setPassword(password);
                 user.setRole(User.UserRole.valueOf(role));
                 user.setStatus(User.AccountStatus.ACTIVE);
-
                 return authService.register(user);
             }
         };
@@ -132,6 +139,7 @@ public class RegisterController {
                 navigateToLogin();
             } else {
                 showError("Registration failed. Username or email may already exist.");
+                ProfileController.showErrorPopup("Register Error", "Registration failed. Username or email may already exist.");
                 setFormDisabled(false);
             }
         });
@@ -140,11 +148,11 @@ public class RegisterController {
             log.error("Registration failed", e.getSource().getException());
             Platform.runLater(() -> {
                 showError("Registration failed. Please try again.");
+                ProfileController.showErrorPopup("Register Error", "Registration failed. Please try again.");
                 setFormDisabled(false);
                 loadingIndicator.setVisible(false);
             });
         });
-
         new Thread(registerTask).start();
     }
 
