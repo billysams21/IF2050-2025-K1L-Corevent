@@ -198,6 +198,7 @@ public class ParticipantDashboardController {
     @FXML
     private void handleMyEvaluations() {
         try {
+            // Show list of events that can be evaluated
             navigationManager.navigateToMyEvaluations();
         } catch (IOException e) {
             log.error("Failed to navigate to my evaluations", e);

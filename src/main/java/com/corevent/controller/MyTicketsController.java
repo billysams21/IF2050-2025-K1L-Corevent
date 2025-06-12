@@ -200,7 +200,7 @@ public class MyTicketsController {
     @FXML
     private void handleBack() {
         try {
-            navigationManager.navigateToParticipantDashboard();
+            navigationManager.goBack();
         } catch (IOException e) {
             log.error("Failed to navigate back to dashboard", e);
             showError("Failed to navigate back to dashboard");
