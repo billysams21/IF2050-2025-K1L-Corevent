@@ -20,15 +20,7 @@
     <!-- Event Selection -->
     <HBox spacing="15" alignment="CENTER_LEFT" styleClass="event-selection">
         <Label text="Pilih Acara:" styleClass="section-title" minWidth="100"/>
-        <ComboBox fx:id="eventComboBox" prefWidth="300" promptText="Pilih event untuk melihat evaluasi...">
-            <cellFactory>  
-                <Callback>
-                    <fx:define>
-                        <fx:reference source="com.corevent.util.EventCellFactory"/>
-                    </fx:define>
-                </Callback>
-            </cellFactory>
-        </ComboBox>
+        <ComboBox fx:id="eventComboBox" prefWidth="300" promptText="Pilih event untuk melihat evaluasi..."/>
         <Region HBox.hgrow="ALWAYS"/>
         <Button text="Unduh Laporan Lengkap" styleClass="button-secondary" prefWidth="180"/>
     </HBox>
