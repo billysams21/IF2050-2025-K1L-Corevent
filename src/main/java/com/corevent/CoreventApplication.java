@@ -25,7 +25,6 @@ public class CoreventApplication extends Application {
     
     public static void main(String[] args) {
         // Set system properties for JavaFX
-        System.setProperty("javafx.preloader", "com.corevent.CoreventApplication");
         System.setProperty("prism.lcdtext", "false");
         
         Application.launch(args);

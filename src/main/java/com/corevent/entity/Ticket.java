@@ -74,10 +74,11 @@ public class Ticket {
     public TicketStatus getStatus() { return status; }
     public void setStatus(TicketStatus status) { this.status = status; }
     
+    public LocalDateTime getPurchaseDate() { return purchaseDate; }
+    public void setPurchaseDate(LocalDateTime purchaseDate) { this.purchaseDate = purchaseDate; }
+    
     // Enum for Ticket Status
     public enum TicketStatus {
         ACTIVE, USED, CANCELLED
     }
-
-    public LocalDateTime getPurchaseDate() { return purchaseDate; }
 }

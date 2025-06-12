@@ -15,6 +15,20 @@ public class CreateEventRequest {
   private String termsAndConditions;
   private String description;
   
+  public CreateEventRequest() {}
+  
+  public CreateEventRequest(String eventName, LocalDateTime date, String location,
+                          Integer quota, String eventType, Double ticketPrice,
+                          String termsAndConditions) {
+    this.eventName = eventName;
+    this.date = date;
+    this.location = location;
+    this.quota = quota;
+    this.eventType = Event.EventType.valueOf(eventType);
+    this.ticketPrice = ticketPrice;
+    this.termsAndConditions = termsAndConditions;
+  }
+  
   // Getters and Setters
   public String getEventName() { return eventName; }
   public void setEventName(String eventName) { this.eventName = eventName; }
