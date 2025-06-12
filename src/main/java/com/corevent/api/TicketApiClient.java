@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.corevent.dto.*;
+import com.corevent.dto.event.BuyTicketRequest;
+import com.corevent.dto.event.BuyTicketResponse;
+import com.corevent.dto.event.CheckInResponse;
 import com.corevent.entity.Ticket;
 
 import jakarta.annotation.PostConstruct;

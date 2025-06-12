@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import com.corevent.entity.Event;
 
-public class CreateEventRequest {
+public class UpdateEventRequest {
   private String eventName;
   private LocalDateTime date;
   private String schedule;
@@ -15,9 +15,9 @@ public class CreateEventRequest {
   private String termsAndConditions;
   private String description;
   
-  public CreateEventRequest() {}
+  public UpdateEventRequest() {}
   
-  public CreateEventRequest(String eventName, LocalDateTime date, String location,
+  public UpdateEventRequest(String eventName, LocalDateTime date, String location,
                           Integer quota, String eventType, Double ticketPrice,
                           String termsAndConditions) {
     this.eventName = eventName;
@@ -53,7 +53,7 @@ public class CreateEventRequest {
   
   public String getTermsAndConditions() { return termsAndConditions; }
   public void setTermsAndConditions(String termsAndConditions) { 
-    this.termsAndConditions = termsAndConditions; 
+      this.termsAndConditions = termsAndConditions; 
   }
   
   public String getDescription() { return description; }
