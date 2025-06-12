@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.corevent.api.AuthApiClient;
-import com.corevent.dto.auth.LoginRequest;
 import com.corevent.dto.auth.LoginResponse;
 import com.corevent.entity.User;
 import com.corevent.repository.UserRepository;
@@ -29,54 +27,60 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final AuthApiClient authApiClient;
     private final JwtTokenUtil jwtTokenUtil;
 
     public CompletableFuture<LoginResponse> authenticate(String username, String password, boolean rememberMe) {
-        LoginRequest request = new LoginRequest(username, password, rememberMe);
-        
         return CompletableFuture.supplyAsync(() -> {
             try {
-                // Try online authentication first
-                LoginResponse response = authApiClient.login(request).execute().body();
-                if (response != null && response.isSuccess()) {
-                    handleSuccessfulLogin(response.getUser(), response.getToken(), rememberMe);
-                    return response;
+                Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+                );
+                
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                User user = (User) authentication.getPrincipal();
+                
+                if (user.getStatus() != User.AccountStatus.ACTIVE) {
+                    return new LoginResponse(false, "Account is not active", null, null, null, 0);
                 }
+                
+                String token = jwtTokenUtil.generateToken(user);
+                String refreshToken = rememberMe ? jwtTokenUtil.generateRefreshToken(user) : null;
+                
+                handleSuccessfulLogin(user, token, rememberMe);
+                
+                return new LoginResponse(true, "Login successful", 
+                    user, token, refreshToken, jwtTokenUtil.getExpirationTime());
+                
             } catch (Exception e) {
-                log.warn("Online authentication failed, falling back to offline mode", e);
-                return authenticateOffline(username, password, rememberMe);
+                log.error("Authentication failed", e);
+                return new LoginResponse(false, "Invalid username or password", null, null, null, 0);
             }
-            
-            return new LoginResponse(false, "Invalid credentials", null, null, null, 0);
         });
     }
 
     @Transactional
-    private LoginResponse authenticateOffline(String username, String password, boolean rememberMe) {
+    public boolean register(User user) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-            );
-            
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            User user = (User) authentication.getPrincipal();
-            
-            if (user.getStatus() != User.AccountStatus.ACTIVE) {
-                return new LoginResponse(false, "Account is not active", null, null, null, 0);
+            // Check if username or email already exists
+            if (userRepository.existsByUsername(user.getUsername()) || 
+                userRepository.existsByEmail(user.getEmail())) {
+                return false;
             }
             
-            String token = jwtTokenUtil.generateToken(user);
-            String refreshToken = rememberMe ? jwtTokenUtil.generateRefreshToken(user) : null;
+            // Encode password
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             
-            handleSuccessfulLogin(user, token, rememberMe);
+            // Set default values
+            user.setEnabled(true);
+            user.setCreatedAt(LocalDateTime.now());
+            user.setStatus(User.AccountStatus.ACTIVE);
             
-            return new LoginResponse(true, "Offline authentication successful", 
-                user, token, refreshToken, jwtTokenUtil.getExpirationTime());
-            
+            // Save user
+            userRepository.save(user);
+            return true;
         } catch (Exception e) {
-            log.error("Offline authentication failed", e);
-            return new LoginResponse(false, "Invalid credentials (offline mode)", null, null, null, 0);
+            log.error("Registration failed", e);
+            return false;
         }
     }
 
@@ -102,15 +106,6 @@ public class AuthService {
         
         SecurityContextHolder.clearContext();
         SessionManager.getInstance().clearSession();
-        
-        // Notify backend about logout
-        CompletableFuture.runAsync(() -> {
-            try {
-                authApiClient.logout().execute();
-            } catch (Exception e) {
-                log.warn("Failed to notify backend about logout", e);
-            }
-        });
     }
 
     public User getCurrentUser() {
