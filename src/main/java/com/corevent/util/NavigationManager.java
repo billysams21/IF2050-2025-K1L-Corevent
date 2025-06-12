@@ -10,7 +10,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import lombok.extern.slf4j.Slf4j;
+
 // Manager for navigating between scenes in the application
+@Slf4j
 @Component
 public class NavigationManager {
   
@@ -51,6 +54,10 @@ public class NavigationManager {
   
   public void navigateToManageAttendance() throws IOException {
     loadScene("/fxml/manage-attendance.fxml", "Corevent - Manage Attendance");
+  }
+  
+  public void navigateToSendNotification() throws IOException {
+    loadScene("/fxml/send-notification.fxml", "Corevent - Send Notification");
   }
   
   public void navigateToProfile() throws IOException {
